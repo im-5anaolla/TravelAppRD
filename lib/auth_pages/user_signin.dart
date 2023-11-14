@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:travely/auth_pages/forgot_password.dart';
@@ -18,6 +19,28 @@ class _UserSignUpState extends State<UserSignin> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _passwordVisible = false;
 
+  void _validatePassword(String password) {
+    if (password.length < 8) {
+      _showSnackbar('Password must be at least 8 characters.');
+    }
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  String? _validateEmail(value) {
+    if (value.isEmpty) {
+      return 'Enter email';
+    }
+    RegExp regExp = RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
+    if (!regExp.hasMatch(value)) {
+      return 'Please enter a valid email';
+    }
+    return null;
+  }
+
   void passwordVisibility() {
     setState(() {
       _passwordVisible = !_passwordVisible; //Switched into true.
@@ -27,23 +50,42 @@ class _UserSignUpState extends State<UserSignin> {
   login(String email, String password) async {
     try {
       Response response = await post(
-          Uri.parse('https://travelapp.redstonz.com/api/v1/auth/sign-in'),
-          body: {
-            'email': email,
-            'password': password,
-          });
+        Uri.parse('https://travelapp.redstonz.com/api/v1/auth/sign-in'),
+        body: {
+          'email': email,
+          'password': password,
+        },
+      );
+
       if (response.statusCode == 200) {
-        print('Login Successfully');
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => CityListScreen()));
+        Map<String, dynamic> responseBody = json.decode(response.body);
+
+        if (responseBody['success'] == true) {
+          print('Login Successfully');
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => CityListScreen()),
+          );
+        } else {
+          print('Login Failed: Incorrect credentials');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Incorrect email or password. Please try again.'),
+            ),
+          );
+        }
       } else {
-        print('Login Failed');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sign in faild')));
+        print('Login Failed: Unknown error');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content:
+                Text('Sign in failed. Check your credentials and try again.'),
+          ),
+        );
       }
     } catch (e) {
       print('Error: $e');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -71,15 +113,21 @@ class _UserSignUpState extends State<UserSignin> {
           Form(
             key: _formKey,
             child: ListView(
-              padding:  EdgeInsets.only(
+              padding: EdgeInsets.only(
                 top: screenHeight * 0.6,
               ),
               children: [
                 // Email/Phone TextField
                 Container(
-                  height: screenHeight * 0.065,
-                  margin: EdgeInsets.only(left: screenWidth * 0.04, right: screenWidth * 0.04, top: screenHeight * 0.01),
-                  padding:  EdgeInsets.only(left: screenWidth * 0.06,),
+                  height: screenHeight * 0.072,
+                  margin: EdgeInsets.only(
+                    left: screenWidth * 0.04,
+                    right: screenWidth * 0.04,
+                    top: screenHeight * 0.01,
+                  ),
+                  padding: EdgeInsets.only(
+                    left: screenWidth * 0.06,
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     color: Colors.white70,
@@ -90,19 +138,19 @@ class _UserSignUpState extends State<UserSignin> {
                       hintText: 'Email',
                       border: InputBorder.none,
                     ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter your email/phone.';
-                      }
-                      return null;
-                    },
+                    validator: _validateEmail,
                   ),
                 ),
                 // Password TextField
                 Container(
-                    height: screenHeight * 0.06,
-                  margin:  EdgeInsets.only(left: screenWidth * 0.04, right: screenWidth * 0.04, top: screenHeight * 0.01),
-                  padding:  EdgeInsets.only(left: screenWidth * 0.06),
+                  height: screenHeight * 0.07,
+                  margin: EdgeInsets.only(
+                    left: screenWidth * 0.04,
+                    right: screenWidth * 0.04,
+                    top: screenHeight * 0.02,
+                  ),
+                  padding: EdgeInsets.only(
+                      left: screenWidth * 0.06, top: screenWidth * 0.02),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     color: Colors.white70,
@@ -115,30 +163,41 @@ class _UserSignUpState extends State<UserSignin> {
                       hintText: 'Password',
                       suffixIcon: GestureDetector(
                         onTap: passwordVisibility,
-                        child: Icon(
-                          _passwordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                          size: 20,
+                        child: Tooltip(
+                          message: _passwordVisible
+                              ? 'Hide password'
+                              : 'Show password',
+                          child: Icon(
+                            _passwordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            size: 20,
+                          ),
                         ),
                       ),
                     ),
                     validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter a password.';
+                      if (value!.isEmpty || value.length < 8) {
+                        _validatePassword(value);
+                        return 'Please enter a valid password (at least 8 characters).';
                       }
                       return null;
                     },
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(left: screenWidth * 0.68, top: screenHeight * 0.01),
+                  margin: EdgeInsets.only(
+                    left: screenWidth * 0.68,
+                    top: screenHeight * 0.01,
+                  ),
                   child: GestureDetector(
                     onTap: () {
                       Navigator.push(
-                          (context),
-                          MaterialPageRoute(
-                              builder: (context) => ForgotPasswordPage()));
+                        (context),
+                        MaterialPageRoute(
+                          builder: (context) => ForgotPasswordPage(),
+                        ),
+                      );
                     },
                     child: const Text(
                       "Forgot Password",
@@ -156,13 +215,15 @@ class _UserSignUpState extends State<UserSignin> {
                   height: screenHeight * 0.06,
                   width: screenWidth,
                   margin: EdgeInsets.only(
-                      left: screenWidth * 0.04, right: screenWidth * 0.04, top: screenHeight * 0.06, bottom: screenHeight * 0.01),
+                    left: screenWidth * 0.04,
+                    right: screenWidth * 0.04,
+                    top: screenHeight * 0.06,
+                    bottom: screenHeight * 0.01,
+                  ),
                   child: ElevatedButton(
                     onPressed: () {
-                      login(
-                        emailTextController.text,
-                        passwordTextController.text,
-                      );
+                      login(emailTextController.text,
+                          passwordTextController.text);
                     },
                     child: const Text(
                       'Sign in',

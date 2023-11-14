@@ -1,6 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:travely/home/city_list_screen.dart';
+import 'package:travely/home/city_sectors.dart';
 import 'auth_pages/welcom_page.dart';
+import 'cities/interest_point.dart';
 import 'components/global_variables.dart';
 
 void main() async {
@@ -17,7 +20,7 @@ class MyApp extends StatelessWidget {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
     bgImage = 'assets/images/BGTravel.jpg';
-    return const MaterialApp(
+    return  const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: WelcomePage(),
     );

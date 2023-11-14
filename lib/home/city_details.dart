@@ -5,19 +5,22 @@ class CityDetails extends StatefulWidget {
   final city;
   final images;
   final description;
+  final lat;
+  final lng;
+  final id;
 
   const CityDetails(
       {super.key,
       required this.country,
       required this.city,
       required this.images,
-      required this.description});
+      required this.description, this.lat, this.lng, this.id});
 
   @override
   State<CityDetails> createState() => _CityDetailsState();
 }
 
-const imgUrl = 'https://travelapp.redstonz.com/assets/uploads/city-images/';
+const secImgUrl = 'https://travelapp.redstonz.com/assets/uploads/place/';
 
 class _CityDetailsState extends State<CityDetails> {
   @override
@@ -27,6 +30,7 @@ class _CityDetailsState extends State<CityDetails> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('City Details'),
+        backgroundColor: Colors.black,
       ),
       body: Stack(
         children: [
@@ -34,7 +38,7 @@ class _CityDetailsState extends State<CityDetails> {
             height: screenHeight * 0.4,
             width: MediaQuery.of(context).size.width,
             child: Image.network(
-              imgUrl + widget.images![0],
+              secImgUrl + widget.images![0],
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrac){
                 return Container(
@@ -61,10 +65,10 @@ class _CityDetailsState extends State<CityDetails> {
             margin: const EdgeInsets.only(top: 270),
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              color: Colors.orange.shade50,
-              borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(20), topLeft: Radius.circular(20)),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(10), topLeft: Radius.circular(10)),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -77,14 +81,14 @@ class _CityDetailsState extends State<CityDetails> {
                   ),
                   child: Text(
                     (widget.city),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
                 ),
                 const SizedBox(
-                  height: 10,
+                  height: 5,
                 ),
                 Container(
                   margin: const EdgeInsets.only(
@@ -92,9 +96,9 @@ class _CityDetailsState extends State<CityDetails> {
                   ),
                   child: Text(
                     (widget.country),
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      color: Colors.black54,
                     ),
                   ),
                 ),
@@ -107,8 +111,9 @@ class _CityDetailsState extends State<CityDetails> {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     (widget.description),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
+                      color: Colors.black38,
                     ),
                     maxLines: 4,
                     overflow: TextOverflow.ellipsis,

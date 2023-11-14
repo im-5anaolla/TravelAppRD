@@ -22,7 +22,20 @@ class CityListModel {
     }
     return data;
   }
+
+  // Method to get city details by ID
+  Data? getCityById(int id) {
+    if (data != null) {
+      for (Data cityData in data!) {
+        if (cityData.id == id) {
+          return cityData;
+        }
+      }
+    }
+    return null; // Return null if no city with the specified ID is found
+  }
 }
+
 class Data {
   int? id;
   String? country;

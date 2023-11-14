@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:travely/auth_pages/user_signin.dart';
+import 'package:travely/auth_pages/user_signup.dart';
 import 'package:travely/components/global_variables.dart';
 import 'package:travely/home/city_list_screen.dart';
 
@@ -61,12 +62,17 @@ class WelcomePage extends StatelessWidget {
                     SizedBox(
                       width: screenWidth * 0.015,
                     ),
-                    const Text(
-                      'Sign-Up',
-                      style: TextStyle(
-                        color: Colors.lightBlueAccent,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                    GestureDetector(
+                      onTap: (){
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => UserSignUp()));
+                      },
+                      child: const Text(
+                        'Sign-Up',
+                        style: TextStyle(
+                          color: Colors.lightBlueAccent,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
                       ),
                     ),
                   ],

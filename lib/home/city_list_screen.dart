@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:travely/home/city_details.dart';
+import 'package:travely/home/city_sectors.dart';
 import '../app_models/city_list_model.dart';
 
 class CityListScreen extends StatefulWidget {
@@ -80,7 +81,7 @@ class _CityListScreenState extends State<CityListScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Container(
-                                    margin: EdgeInsets.only(
+                                    margin: const EdgeInsets.only(
                                       bottom: 10,
                                     ),
                                     child: Row(
@@ -95,14 +96,7 @@ class _CityListScreenState extends State<CityListScreen> {
                                               Navigator.of(context).push(
                                                   MaterialPageRoute(
                                                       builder: (context) =>
-                                                          CityDetails(
-                                                            city: city.city,
-                                                            country:
-                                                                city.country,
-                                                            images: city.images,
-                                                            description: city
-                                                                .description,
-                                                          )));
+                                                          CitySectors(cityId: city.id!, name: city.city!, description: city.description!)));
                                             },
                                             child: ClipRRect(
                                               borderRadius:

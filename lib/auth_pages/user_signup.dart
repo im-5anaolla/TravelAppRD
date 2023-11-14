@@ -27,17 +27,27 @@ class _UserSignUpState extends State<UserSignUp> {
     });
   }
 
-  void _showSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('')));
+  String? _validateEmail(value) {
+    if (value.isEmpty) {
+      return 'Enter email';
+    }
+    RegExp regExp = RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
+    if (!regExp.hasMatch(value)) {
+      return 'Please enter a valid email';
+    }
+    return null;
   }
 
-  //Weak password snackBar message
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Text(message),
+    ));
+  }
+
   void _validatePassword(String password) {
     if (password.length < 8) {
-      _showSnackbar('Password must be atleast 8 charecters.');
-    } else {
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => CityListScreen()));
+      _showSnackbar('Password must be at least 8 characters.');
     }
   }
 
@@ -58,8 +68,12 @@ class _UserSignUpState extends State<UserSignUp> {
       );
 
       if (response.statusCode == 200) {
+        // Consider showing a success message or navigating to the next screen.
         print('Account Created Successfully');
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => CityListScreen()));
       } else {
+        // Consider showing an error message to the user.
         print('An error occurred while creating an account.');
       }
     } catch (e) {
@@ -96,8 +110,8 @@ class _UserSignUpState extends State<UserSignUp> {
                 // Name TextField
                 Container(
                   margin: const EdgeInsets.only(
-                    left: 30,
-                    right: 30,
+                    left: 8,
+                    right: 8,
                   ),
                   padding: const EdgeInsets.only(left: 20, right: 5),
                   decoration: BoxDecoration(
@@ -120,7 +134,7 @@ class _UserSignUpState extends State<UserSignUp> {
                 ),
                 // Email/Phone TextField
                 Container(
-                  margin: const EdgeInsets.only(left: 30, right: 30, top: 15),
+                  margin: const EdgeInsets.only(left: 8, right: 8, top: 10),
                   padding: const EdgeInsets.only(left: 20, right: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
@@ -130,17 +144,12 @@ class _UserSignUpState extends State<UserSignUp> {
                     controller: emailTextController,
                     decoration: const InputDecoration(
                         hintText: 'Enter Email', border: InputBorder.none),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter your email/phone.';
-                      }
-                      return null;
-                    },
+                    validator: _validateEmail
                   ),
                 ),
 
                 Container(
-                  margin: const EdgeInsets.only(left: 30, right: 30, top: 15),
+                  margin: const EdgeInsets.only(left: 8, right: 8, top: 10),
                   padding: const EdgeInsets.only(left: 20, right: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
@@ -164,7 +173,7 @@ class _UserSignUpState extends State<UserSignUp> {
 
                 // Password TextField
                 Container(
-                  margin: const EdgeInsets.only(left: 30, right: 30, top: 15),
+                  margin: const EdgeInsets.only(left: 8, right: 8, top: 10),
                   padding: const EdgeInsets.only(left: 20, right: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
@@ -178,37 +187,48 @@ class _UserSignUpState extends State<UserSignUp> {
                         hintText: 'Enter Password',
                         suffixIcon: GestureDetector(
                           onTap: _passwordVisibility,
-                          child: Icon(
-                            _passwordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            size: 20,
+                          child: Tooltip(
+                            message: _passwordVisible
+                                ? 'Hide password'
+                                : 'Show password',
+                            child: Icon(
+                              _passwordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              size: 20,
+                            ),
                           ),
                         )),
                     validator: (value) {
-                      if (value!.isEmpty && value.length < 12) {
+                      if (value!.isEmpty || value.length < 8) {
                         _validatePassword(value);
+                        return 'Please enter a valid password (at least 8 characters).';
                       }
                       return null;
                     },
                   ),
                 ),
 
-                ///This code sign-up users with api server.
+                ///This code sign-up users with the API server.
                 Container(
-                  margin: EdgeInsets.all(50),
+                  margin:
+                  EdgeInsets.only(top: 40, left: 8, right: 8, bottom: 10),
                   height: 40,
                   width: 100,
-                  decoration: BoxDecoration(color: Colors.blue),
+                  decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(10)),
                   child: Center(
                     child: GestureDetector(
                       onTap: () {
-                        signUP(
-                          nameTextController.text.toString(),
-                          emailTextController.text.toString(),
-                          mobileNumberController.text.toString(),
-                          passwordTextController.text.toString(),
-                        );
+                        if (_formKey.currentState!.validate()) {
+                          signUP(
+                            nameTextController.text.toString(),
+                            emailTextController.text.toString(),
+                            mobileNumberController.text.toString(),
+                            passwordTextController.text.toString(),
+                          );
+                        }
                       },
                       child: const Text(
                         'Sign Up',
