@@ -46,7 +46,7 @@ class _CitySectorsState extends State<CitySectors> {
     }
 
     // Simulate a delay of 2 seconds to show CircularProgressIndicator
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
 
     setState(() {
       isLoading = false;
@@ -67,7 +67,7 @@ class _CitySectorsState extends State<CitySectors> {
         title: const Text('City Sectors'),
       ),
       body: isLoading
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(),
             )
           : data.isNotEmpty
@@ -81,7 +81,7 @@ class _CitySectorsState extends State<CitySectors> {
                         children: [
                           Container(
                             margin: const EdgeInsets.only(
-                              bottom: 10,
+                              top: 10
                             ),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,

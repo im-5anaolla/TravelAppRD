@@ -41,12 +41,12 @@ class _UserSignUpState extends State<UserSignin> {
     return null;
   }
 
-  void passwordVisibility() {
+
+  void _passwordVisibility() {
     setState(() {
-      _passwordVisible = !_passwordVisible; //Switched into true.
+      _passwordVisible = !_passwordVisible;
     });
   }
-
   login(String email, String password) async {
     try {
       Response response = await post(
@@ -65,11 +65,16 @@ class _UserSignUpState extends State<UserSignin> {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => CityListScreen()),
           );
+
         } else {
+
           print('Login Failed: Incorrect credentials');
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Incorrect email or password. Please try again.'),
+             SnackBar(
+              margin: EdgeInsets.only(bottom: screenHeight * 0.91),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Colors.red.shade600,
+              content: const Text('You must enter correct email and password. Please try again.'),
             ),
           );
         }
@@ -159,23 +164,22 @@ class _UserSignUpState extends State<UserSignin> {
                     controller: passwordTextController,
                     obscureText: !_passwordVisible,
                     decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Password',
-                      suffixIcon: GestureDetector(
-                        onTap: passwordVisibility,
-                        child: Tooltip(
-                          message: _passwordVisible
-                              ? 'Hide password'
-                              : 'Show password',
-                          child: Icon(
-                            _passwordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            size: 20,
+                        border: InputBorder.none,
+                        hintText: 'Enter Password',
+                        suffixIcon: GestureDetector(
+                          onTap: _passwordVisibility,
+                          child: Tooltip(
+                            message: _passwordVisible
+                                ? 'Hide password'
+                                : 'Show password',
+                            child: Icon(
+                              _passwordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              size: 20,
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
+                        )),
                     validator: (value) {
                       if (value!.isEmpty || value.length < 8) {
                         _validatePassword(value);
@@ -222,7 +226,8 @@ class _UserSignUpState extends State<UserSignin> {
                   ),
                   child: ElevatedButton(
                     onPressed: () {
-                      login(emailTextController.text,
+                      login(
+                          emailTextController.text,
                           passwordTextController.text);
                     },
                     child: const Text(

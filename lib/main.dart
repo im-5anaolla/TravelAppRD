@@ -1,9 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:travely/home/city_list_screen.dart';
-import 'package:travely/home/city_sectors.dart';
 import 'auth_pages/welcom_page.dart';
-import 'cities/interest_point.dart';
 import 'components/global_variables.dart';
 
 void main() async {
