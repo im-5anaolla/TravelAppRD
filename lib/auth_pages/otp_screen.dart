@@ -4,9 +4,9 @@ import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 
 import '../home/city_list_screen.dart';
 
-
 class OTPScreen extends StatefulWidget {
   final String verificationId;
+
   const OTPScreen({super.key, required this.verificationId});
 
   @override
@@ -64,12 +64,14 @@ class _OTPScreenState extends State<OTPScreen> {
                 backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
               ),
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => CityListScreen()));
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => CityListScreen()));
               },
               child: const Text(
                 'Next',
                 style: TextStyle(
                   fontSize: 16,
+                  color: Colors.white,
                 ),
               ),
             )
@@ -80,13 +82,12 @@ class _OTPScreenState extends State<OTPScreen> {
   }
 }
 
-
 // Start the phone verification process
 Future<void> verifyPhone(String phoneNumber) async {
   verificationCompleted(PhoneAuthCredential credential) async {
     // Auto-retrieved (if enabled) or verified successfully
     UserCredential authResult =
-    await FirebaseAuth.instance.signInWithCredential(credential);
+        await FirebaseAuth.instance.signInWithCredential(credential);
     User user = authResult.user!;
     // Handle successful sign-in
   }
@@ -118,4 +119,3 @@ Future<void> verifyPhone(String phoneNumber) async {
     codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
   );
 }
-

@@ -45,7 +45,7 @@ class _CitySectorsState extends State<CitySectors> {
           'Error: Failed to load city sectors. Status code: ${response.statusCode}');
     }
 
-    // Simulate a delay of 2 seconds to show CircularProgressIndicator
+    // Simulate a delay of 1 seconds to show CircularProgressIndicator
     await Future.delayed(const Duration(seconds: 1));
 
     setState(() {
@@ -63,8 +63,12 @@ class _CitySectorsState extends State<CitySectors> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.black,
-        title: const Text('City Sectors'),
+        title: const Text(
+          'City Sectors',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: isLoading
           ? const Center(
@@ -80,9 +84,7 @@ class _CitySectorsState extends State<CitySectors> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            margin: const EdgeInsets.only(
-                              top: 10
-                            ),
+                            margin: const EdgeInsets.only(top: 10),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -99,6 +101,7 @@ class _CitySectorsState extends State<CitySectors> {
                                             images: intPoint['images'],
                                             description: intPoint['detail'],
                                             id: intPoint['id'],
+                                            voiceNote: intPoint['voice_note'],
                                           ),
                                         ),
                                       );
@@ -165,7 +168,7 @@ class _CitySectorsState extends State<CitySectors> {
                                           padding: const EdgeInsets.only(
                                               top: 0, left: 3.0),
                                           child: Text(
-                                            intPoint['id'].toString(),
+                                            intPoint['city_name'].toString(),
                                             style: const TextStyle(
                                               fontFamily: 'SourceSans3',
                                               fontSize: 12,
@@ -206,9 +209,12 @@ class _CitySectorsState extends State<CitySectors> {
                   },
                 )
               : const Center(
-                  child: Text('No data available.', style: TextStyle(
-                    fontSize: 16,
-                  ),),
+                  child: Text(
+                    'No data available.',
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
     );
   }

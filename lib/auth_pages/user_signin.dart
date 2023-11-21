@@ -1,23 +1,47 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:travely/auth_pages/forgot_password.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:travely/auth_pages/user_signup.dart';
 import 'package:travely/components/global_variables.dart';
 import '../home/city_list_screen.dart';
+import 'forgot_password.dart';
 
 class UserSignin extends StatefulWidget {
   const UserSignin({Key? key}) : super(key: key);
 
   @override
-  _UserSignUpState createState() => _UserSignUpState();
+  _UserSignInState createState() => _UserSignInState();
 }
 
-class _UserSignUpState extends State<UserSignin> {
+class _UserSignInState extends State<UserSignin> {
   final TextEditingController emailTextController = TextEditingController();
   final TextEditingController passwordTextController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _passwordVisible = false;
+  bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkLoginStatus();
+  }
+
+  void checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+    if (isLoggedIn) {
+      navigateToCityListScreen();
+    }
+  }
+
+  void navigateToCityListScreen() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => CityListScreen()),
+    );
+  }
 
   void _validatePassword(String password) {
     if (password.length < 8) {
@@ -26,8 +50,7 @@ class _UserSignUpState extends State<UserSignin> {
   }
 
   void _showSnackbar(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   String? _validateEmail(value) {
@@ -41,13 +64,24 @@ class _UserSignUpState extends State<UserSignin> {
     return null;
   }
 
-
   void _passwordVisibility() {
     setState(() {
       _passwordVisible = !_passwordVisible;
     });
   }
-  login(String email, String password) async {
+
+  Future<void> saveUserIdentifier(String identifier) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('userIdentifier', identifier);
+    print('User identifier: $prefs');
+  }
+
+  Future<void> clearUserIdentifier() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('userIdentifier');
+  }
+
+  Future<void> login(String email, String password) async {
     try {
       Response response = await post(
         Uri.parse('https://travelapp.redstonz.com/api/v1/auth/sign-in'),
@@ -57,38 +91,48 @@ class _UserSignUpState extends State<UserSignin> {
         },
       );
 
+      Map<String, dynamic> responseBody = json.decode(response.body);
+
       if (response.statusCode == 200) {
-        Map<String, dynamic> responseBody = json.decode(response.body);
-
-        if (responseBody['success'] == true) {
+        if (responseBody.containsKey('mesg') &&
+            responseBody['mesg'] == 'login success') {
           print('Login Successfully');
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => CityListScreen()),
-          );
 
+          // Save user identifier if "Remember Me" is selected
+          if (_rememberMe) {
+            await saveUserIdentifier(email);
+          } else {
+            await clearUserIdentifier();
+          }
+
+          // Set isLoggedIn to true in SharedPreferences
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setBool('isLoggedIn', true);
+
+          navigateToCityListScreen();
         } else {
-
-          print('Login Failed: Incorrect credentials');
+          String errorMessage = responseBody['mesg'] ?? 'An unknown error occurred';
+          print('Login Failed: $errorMessage');
           ScaffoldMessenger.of(context).showSnackBar(
-             SnackBar(
-              margin: EdgeInsets.only(bottom: screenHeight * 0.91),
+            SnackBar(
+              margin: EdgeInsets.only(bottom: screenHeight * 0.9),
               behavior: SnackBarBehavior.floating,
               backgroundColor: Colors.red.shade600,
-              content: const Text('You must enter correct email and password. Please try again.'),
+              content: Text('Failed to sign in. $errorMessage'),
             ),
           );
         }
       } else {
         print('Login Failed: Unknown error');
+        print('Response Body: $responseBody');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content:
-                Text('Sign in failed. Check your credentials and try again.'),
+            content: Text('Sign in failed. Check your credentials and try again.'),
           ),
         );
       }
     } catch (e) {
-      print('Error: $e');
+      print('Error during login: $e');
     }
   }
 
@@ -102,19 +146,19 @@ class _UserSignUpState extends State<UserSignin> {
             height: MediaQuery.of(context).size.height,
             color: Colors.indigo.shade100,
           ),
-          // Background Image
           Container(
-            height: double.maxFinite,
             decoration: const BoxDecoration(
               color: Colors.black,
               image: DecorationImage(
-                colorFilter: ColorFilter.mode(Colors.black12, BlendMode.darken),
+                colorFilter: ColorFilter.mode(
+                  Colors.black12,
+                  BlendMode.darken,
+                ),
                 image: AssetImage('assets/images/travelBG.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          // Form
           Form(
             key: _formKey,
             child: ListView(
@@ -122,9 +166,7 @@ class _UserSignUpState extends State<UserSignin> {
                 top: screenHeight * 0.6,
               ),
               children: [
-                // Email/Phone TextField
                 Container(
-                  height: screenHeight * 0.072,
                   margin: EdgeInsets.only(
                     left: screenWidth * 0.04,
                     right: screenWidth * 0.04,
@@ -146,16 +188,16 @@ class _UserSignUpState extends State<UserSignin> {
                     validator: _validateEmail,
                   ),
                 ),
-                // Password TextField
                 Container(
-                  height: screenHeight * 0.07,
                   margin: EdgeInsets.only(
                     left: screenWidth * 0.04,
                     right: screenWidth * 0.04,
                     top: screenHeight * 0.02,
                   ),
                   padding: EdgeInsets.only(
-                      left: screenWidth * 0.06, top: screenWidth * 0.02),
+                    left: screenWidth * 0.06,
+                    top: screenWidth * 0.0,
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     color: Colors.white70,
@@ -164,22 +206,23 @@ class _UserSignUpState extends State<UserSignin> {
                     controller: passwordTextController,
                     obscureText: !_passwordVisible,
                     decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Enter Password',
-                        suffixIcon: GestureDetector(
-                          onTap: _passwordVisibility,
-                          child: Tooltip(
-                            message: _passwordVisible
-                                ? 'Hide password'
-                                : 'Show password',
-                            child: Icon(
-                              _passwordVisible
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              size: 20,
-                            ),
+                      border: InputBorder.none,
+                      hintText: 'Enter Password',
+                      suffixIcon: GestureDetector(
+                        onTap: _passwordVisibility,
+                        child: Tooltip(
+                          message: _passwordVisible
+                              ? 'Hide password'
+                              : 'Show password',
+                          child: Icon(
+                            _passwordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            size: 20,
                           ),
-                        )),
+                        ),
+                      ),
+                    ),
                     validator: (value) {
                       if (value!.isEmpty || value.length < 8) {
                         _validatePassword(value);
@@ -191,30 +234,50 @@ class _UserSignUpState extends State<UserSignin> {
                 ),
                 Container(
                   margin: EdgeInsets.only(
-                    left: screenWidth * 0.68,
-                    top: screenHeight * 0.01,
+                    left: screenWidth * 0.0,
+                    top: screenHeight * 0.0,
                   ),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        (context),
-                        MaterialPageRoute(
-                          builder: (context) => ForgotPasswordPage(),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      "Forgot Password",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w300,
-                        fontFamily: 'SourceSans3',
-                        color: Colors.white70,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Checkbox(
+                        checkColor: Colors.black,
+                        activeColor: Colors.white,
+                        value: _rememberMe,
+                        onChanged: (value) {
+                          setState(() {
+                            _rememberMe = !_rememberMe;
+                            print('RememberMe status: $_rememberMe');
+                          });
+                        },
                       ),
-                    ),
+                      const Text(
+                        'Remember me',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(
+                        width: screenWidth * 0.25,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => ForgotPasswordPage()));
+                        },
+                        child: const Text(
+                          'Forgot Password',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w300,
+                            fontFamily: 'SourceSans3',
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                // Submit Button
                 Container(
                   height: screenHeight * 0.06,
                   width: screenWidth,
@@ -227,8 +290,9 @@ class _UserSignUpState extends State<UserSignin> {
                   child: ElevatedButton(
                     onPressed: () {
                       login(
-                          emailTextController.text,
-                          passwordTextController.text);
+                        emailTextController.text,
+                        passwordTextController.text,
+                      );
                     },
                     child: const Text(
                       'Sign in',
@@ -238,23 +302,26 @@ class _UserSignUpState extends State<UserSignin> {
                     ),
                   ),
                 ),
-                // Log-in Link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('If you don\'t have an account.',
-                        style: TextStyle(color: Colors.white, fontSize: 14)),
+                    const Text(
+                      'If you don\'t have an account.',
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
                     GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => const UserSignUp()));
                       },
-                      child: const Text(' Sign-up',
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          )),
+                      child: const Text(
+                        ' Sign-up',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),

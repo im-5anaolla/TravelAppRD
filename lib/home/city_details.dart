@@ -1,8 +1,10 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:http/http.dart' as http;
+import 'package:travely/components/global_variables.dart';
 
-enum AudioSourceOption { Network, Asset}
+// Define the CityDetails widget
 class CityDetails extends StatefulWidget {
   final country;
   final city;
@@ -11,159 +13,164 @@ class CityDetails extends StatefulWidget {
   final lat;
   final lng;
   final id;
+  final voiceNote;
 
-  const CityDetails(
-      {super.key,
-      required this.country,
-      required this.city,
-      required this.images,
-      required this.description,
-      this.lat,
-      this.lng,
-      this.id});
+  // Constructor for CityDetails widget
+  const CityDetails({
+    Key? key,
+    required this.country,
+    required this.city,
+    required this.images,
+    required this.description,
+    this.lat,
+    this.lng,
+    this.id,
+    required this.voiceNote,
+  }) : super(key: key);
 
+  // Create the state for the CityDetails widget
   @override
   State<CityDetails> createState() => _CityDetailsState();
 }
 
+// Define constant URLs for image and audio clips
 const secImgUrl = 'https://travelapp.redstonz.com/assets/uploads/place/';
+const audioClipsUrl =
+    'https://travelapp.redstonz.com/assets/uploads/voice-note/';
 
+// Create the state class for CityDetails widget
 class _CityDetailsState extends State<CityDetails> {
-  Widget _sourceSelect(){
+  final AudioPlayer _player = AudioPlayer();
+
+  // Dispose method to release resources when the widget is disposed
+  @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
+  }
+
+  // Method to rewind audio playback by 10 seconds
+  void _fastRewind() {
+    _player.seek(_player.position - const Duration(seconds: 10));
+  }
+
+  // Method to fast forward audio playback by 10 seconds
+  void _fastForward() {
+    _player.seek(_player.position + const Duration(seconds: 10));
+  }
+
+  // Widget for playback control buttons
+  Widget _playBackControlButton() {
     return Row(
       children: [
-        MaterialButton(
-          color: Colors.blue, onPressed: () { _setupAudioPlayer(AudioSourceOption.Network); },
-          child: Text("Network"),
+        StreamBuilder<PlayerState>(
+          stream: _player.playerStateStream,
+          builder: (context, snapshot) {
+            final processingState = snapshot.data?.processingState;
+            final playing = snapshot.data?.playing;
+            if (processingState == ProcessingState.loading ||
+                processingState == ProcessingState.buffering) {
+              return Row(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.all(8.0),
+                    height: screenHeight * 0.04,
+                    width:   screenWidth * 0.08,
+                    child: const CircularProgressIndicator(
+                      color: Colors.black,
+                      strokeWidth: 3.0,
+                    ),
+                  ),
+                ],
+              );
+            } else if (playing != true) {
+              return IconButton(
+                  onPressed: _player.play,
+                  iconSize: 32,
+                  icon: const Icon(Icons.play_arrow));
+            } else if (processingState != ProcessingState.completed) {
+              return IconButton(
+                  onPressed: _player.pause,
+                  iconSize: 32,
+                  icon: const Icon(Icons.pause));
+            } else {
+              return IconButton(
+                onPressed: () => _player.seek(Duration.zero),
+                icon: const Icon(Icons.replay),
+                iconSize: 32,
+              );
+            }
+          },
         ),
-        MaterialButton(
-          color: Colors.blue, onPressed: () { _setupAudioPlayer(AudioSourceOption.Asset); },
-          child: Text("Asset"),
-        )
       ],
     );
   }
 
-  Widget _controllButtons(){
-    return Column(
-      children: [
-        StreamBuilder(stream: _player.speedStream, builder: (context, snapshot){
-         return Row(
-            children: [
-              Icon(Icons.speed),
-              Slider(
-                  min: 1,
-                  max: 3,
-                  divisions: 3,
-                  value: snapshot.data ?? 1,
-                  onChanged: (value) async {
-                await _player.setSpeed(value);
-              })
-              
-            ],
-          );
-        }),
-        StreamBuilder(stream: _player.volumeStream, builder: (context, snapshot){
-          return Row(
-            children: [
-              Icon(Icons.volume_up),
-              Slider(
-                  min: 0,
-                  max: 3,
-                  divisions: 4,
-                  value: snapshot.data ?? 1,
-                  onChanged: (value) async {
-                    await _player.setVolume(value);
-                  })
-
-            ],
-          );
-        })
-      ],
-    );
-  }
-
-  Widget _playBackControllButton() {
-    return StreamBuilder<PlayerState>(
-        stream: _player.playerStateStream,
-        builder: (context, snapshot) {
-          final processingState = snapshot.data?.processingState;
-          final playing = snapshot.data?.playing;
-          if (processingState == ProcessingState.loading ||
-              processingState == ProcessingState.buffering) {
-            return Container(
-              margin: EdgeInsets.all(8.0),
-              height: 64,
-              width: 64,
-              child: CircularProgressIndicator(),
-            );
-          } else if (playing != true) {
-            return IconButton(
-                onPressed: _player.play,
-                iconSize: 64,
-                icon: Icon(Icons.play_arrow));
-          } else if (processingState != ProcessingState.completed) {
-            return IconButton(
-                onPressed: _player.pause,
-                iconSize: 64,
-                icon: Icon(Icons.pause));
-          } else {
-            return IconButton(
-              onPressed: () => _player.seek(Duration.zero),
-              icon: Icon(Icons.replay),
-              iconSize: 64,
-            );
-          }
-        });
-  }
-
-  Widget _progressBar(){
-    return StreamBuilder<Duration?>(stream: _player.positionStream, builder: (context, snapshot){
-      return ProgressBar(progress: snapshot.data ?? Duration.zero,
+  // Widget for progress bar to visualize audio playback progress
+  Widget _progressBar() {
+    return StreamBuilder<Duration?>(
+      stream: _player.positionStream,
+      builder: (context, snapshot) {
+        return ProgressBar(
+          progress: snapshot.data ?? Duration.zero,
           buffered: _player.bufferedPosition,
-          total: _player.duration ?? Duration.zero, onSeek: (duration){
-        _player.seek(duration);
-        },);
-    });
+          total: _player.duration ?? Duration.zero,
+          progressBarColor: Colors.black26,
+          bufferedBarColor: Colors.indigo.shade50,
+          thumbColor: Colors.indigo.shade200,
+          onSeek: (duration) {
+            _player.seek(duration);
+          },
+        );
+      },
+    );
   }
 
-  final _player = AudioPlayer();
-
-  Future<void> _setupAudioPlayer(AudioSourceOption option) async {
-    _player.playbackEventStream.listen((event) {},
-        onError: (Object e, StackTrace stackTrace) {
-      print('A stream error occured: $e');
-    });
+  // Method to set up audio player and load audio stream
+  Future<void> _setupAudioPlayer() async {
+    _player.playbackEventStream.listen(
+      (event) {},
+      onError: (Object e, StackTrace stackTrace) {
+        print('A stream error occurred: $e');
+      },
+    );
     try {
-      if(option == AudioSourceOption.Network){
-        _player.setAudioSource(AudioSource.uri(
-            Uri.parse('https://orangefreesounds.com/sadness-sound/')));
-      }else if(option == AudioSourceOption.Asset){
-        _player.setAudioSource(AudioSource.asset("assets/soundClips/hood.mp3"));
-      }
+      _player.setAudioSource(
+        AudioSource.uri(
+          Uri.parse(audioClipsUrl + widget.voiceNote),
+        ),
+      );
     } catch (e) {
       print('Error loading audio stream: $e');
     }
   }
 
+  // Initialize audio player setup when the widget is created
   @override
   void initState() {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
-    _setupAudioPlayer(AudioSourceOption.Network);
+    _setupAudioPlayer();
   }
 
+  // Build the UI for the CityDetails widget
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('City Details'),
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
+        title: const Text('City Details', style: TextStyle(
+          color: Colors.white,
+        ),),
         backgroundColor: Colors.black,
       ),
       body: Stack(
         children: [
+          // Image display container
           Container(
             height: screenHeight * 0.4,
             width: MediaQuery.of(context).size.width,
@@ -190,23 +197,27 @@ class _CityDetailsState extends State<CityDetails> {
               },
             ),
           ),
+          // City details container
           Container(
-            margin: const EdgeInsets.only(top: 270),
+            margin:  EdgeInsets.only(top: screenHeight * 0.36),
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(10), topLeft: Radius.circular(10)),
+                topRight: Radius.circular(10),
+                topLeft: Radius.circular(10),
+              ),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // City name text
                 Container(
-                  margin: const EdgeInsets.only(
-                    top: 20,
-                    left: 15,
+                  margin: EdgeInsets.only(
+                    top: screenHeight * 0.03,
+                    left: screenWidth * 0.03,
                   ),
                   child: Text(
                     (widget.city),
@@ -216,12 +227,13 @@ class _CityDetailsState extends State<CityDetails> {
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 5,
+                 SizedBox(
+                  height: screenHeight * 0.01,
                 ),
+                // Country name text
                 Container(
-                  margin: const EdgeInsets.only(
-                    left: 15,
+                  margin:  EdgeInsets.only(
+                    left: screenWidth * 0.061,
                   ),
                   child: Text(
                     (widget.country),
@@ -231,11 +243,12 @@ class _CityDetailsState extends State<CityDetails> {
                     ),
                   ),
                 ),
+                // Description text
                 Container(
-                  height: 100,
+                  height: screenHeight * 0.14,
                   width: double.maxFinite,
-                  margin: const EdgeInsets.only(
-                    left: 15,
+                  margin:  EdgeInsets.only(
+                    left: screenWidth * 0.04,
                   ),
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
@@ -251,40 +264,48 @@ class _CityDetailsState extends State<CityDetails> {
               ],
             ),
           ),
+          // Audio playback controls container
           Container(
-            margin: EdgeInsets.only(top: 430),
-            height: 220,
+            margin: EdgeInsets.only(top: screenHeight * 0.62,),
             width: screenWidth,
-            color: Colors.red,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
+                // Voice clip label
+                 Padding(
+                  padding: EdgeInsets.only(left: screenWidth * 0.05,),
+                  child: const Text(
                     'Voice clip about the location',
                     style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 21,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
                   ),
                 ),
-                Container(
-                  height: 140,
-                  width: screenWidth,
-                  color: Colors.white,
-                  child: Column(
-                    children: [
-                      _sourceSelect(),
-                      _progressBar(),
-                      Row(
-                        children: [
-                          _controllButtons(),
-                          _playBackControllButton(),
-                        ],
-                      )
-                    ],
-                  ),
+                Column(
+                  children: [
+                    // Progress bar
+                    Container(
+                        margin: EdgeInsets.only(
+                            left: screenWidth * 0.04,
+                            right: screenWidth * 0.04),
+                        child: _progressBar()),
+                    // Playback control buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: _fastRewind,
+                          icon: const Icon(Icons.fast_rewind_sharp),
+                        ),
+                        _playBackControlButton(),
+                        IconButton(
+                          onPressed: _fastForward,
+                          icon: const Icon(Icons.fast_forward_sharp),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
               ],
             ),
@@ -294,5 +315,3 @@ class _CityDetailsState extends State<CityDetails> {
     );
   }
 }
-
-

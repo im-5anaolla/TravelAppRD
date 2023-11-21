@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:travely/auth_pages/otp_screen.dart';
+import 'package:travely/auth_pages/phone_input_page.dart';
 import 'package:travely/auth_pages/user_signin.dart';
 import 'package:travely/home/city_list_screen.dart';
 
@@ -20,6 +22,7 @@ class _UserSignUpState extends State<UserSignUp> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _passwordVisible = false;
+
 
   void _passwordVisibility() {
     setState(() {
@@ -71,7 +74,7 @@ class _UserSignUpState extends State<UserSignUp> {
         // Consider showing a success message or navigating to the next screen.
         print('Account Created Successfully');
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => CityListScreen()));
+            .push(MaterialPageRoute(builder: (context) => PhoneInputPage()));
       } else {
         // Consider showing an error message to the user.
         print('An error occurred while creating an account.');
@@ -212,7 +215,7 @@ class _UserSignUpState extends State<UserSignUp> {
                 ///This code sign-up users with the API server.
                 Container(
                   margin:
-                  EdgeInsets.only(top: 40, left: 8, right: 8, bottom: 10),
+                  const EdgeInsets.only(top: 40, left: 8, right: 8, bottom: 10),
                   height: 40,
                   width: 100,
                   decoration: BoxDecoration(

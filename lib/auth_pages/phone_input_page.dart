@@ -10,7 +10,7 @@ class PhoneInputPage extends StatefulWidget {
 
 class _PhoneInputPageState extends State<PhoneInputPage> {
 
-  bool loadign = false;
+  bool loading = false;
   final phoneNumberController = TextEditingController();
   final auth = FirebaseAuth.instance;
 

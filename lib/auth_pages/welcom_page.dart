@@ -28,8 +28,9 @@ class WelcomePage extends StatelessWidget {
                   margin: EdgeInsets.only(
                       top: screenHeight * 0.05, left: screenWidth * 0.7),
                   child: InkWell(
-                    onTap: (){
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => CityListScreen()));
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => CityListScreen()));
                     },
                     child: const Text(
                       'Skip',
@@ -44,7 +45,8 @@ class WelcomePage extends StatelessWidget {
                   width: screenWidth,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> UserSignin()));
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => UserSignin()));
                     },
                     child: const Text('Login'),
                   ),
@@ -63,8 +65,9 @@ class WelcomePage extends StatelessWidget {
                       width: screenWidth * 0.015,
                     ),
                     GestureDetector(
-                      onTap: (){
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => UserSignUp()));
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => UserSignUp()));
                       },
                       child: const Text(
                         'Sign-Up',
