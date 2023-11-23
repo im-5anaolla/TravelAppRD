@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:travely/auth_pages/user_signin.dart';
+import 'package:travely/components/global_variables.dart';
 
 class ForgotPasswordPage extends StatelessWidget {
   @override
@@ -13,12 +14,11 @@ class ForgotPasswordPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                margin: EdgeInsets.only(top: 20),
-                width: double.maxFinite,
-                height: 300,
+                margin: EdgeInsets.only(top: screenHeight * 0.04),
+                height: screenHeight * 0.35,
                 child: Image.asset('assets/images/forgotPasswordOne.jpg'),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: screenHeight * 0.01),
               const Text(
                 'Forgot Password',
                 style: TextStyle(
@@ -28,7 +28,7 @@ class ForgotPasswordPage extends StatelessWidget {
                   letterSpacing: 1,
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: screenHeight * 0.02),
               const Text(
                 'Enter your email to reset your password',
                 style: TextStyle(
@@ -36,7 +36,7 @@ class ForgotPasswordPage extends StatelessWidget {
                   color: Colors.grey,
                 ),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: screenHeight * 0.05),
               TextFormField(
                 decoration: const InputDecoration(
                   labelText: 'Email',
@@ -44,14 +44,14 @@ class ForgotPasswordPage extends StatelessWidget {
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.05),
               ElevatedButton(
                 onPressed: () {
                   // Implement password reset logic
                 },
                 child: Text('Reset Password'),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: screenHeight * 0.01),
               TextButton(
                 onPressed: () {
                   Navigator.push((context), MaterialPageRoute(builder: (context) => UserSignin()));

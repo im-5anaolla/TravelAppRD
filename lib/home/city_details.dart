@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:http/http.dart' as http;
 import 'package:travely/components/global_variables.dart';
+import 'package:travely/home/map_page.dart';
 
 // Define the CityDetails widget
 class CityDetails extends StatefulWidget {
@@ -75,7 +76,7 @@ class _CityDetailsState extends State<CityDetails> {
                   Container(
                     margin: const EdgeInsets.all(8.0),
                     height: screenHeight * 0.04,
-                    width:   screenWidth * 0.08,
+                    width: screenWidth * 0.08,
                     child: const CircularProgressIndicator(
                       color: Colors.black,
                       strokeWidth: 3.0,
@@ -163,9 +164,12 @@ class _CityDetailsState extends State<CityDetails> {
         iconTheme: const IconThemeData(
           color: Colors.white,
         ),
-        title: const Text('City Details', style: TextStyle(
-          color: Colors.white,
-        ),),
+        title: const Text(
+          'City Details',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
         backgroundColor: Colors.black,
       ),
       body: Stack(
@@ -199,7 +203,7 @@ class _CityDetailsState extends State<CityDetails> {
           ),
           // City details container
           Container(
-            margin:  EdgeInsets.only(top: screenHeight * 0.36),
+            margin: EdgeInsets.only(top: screenHeight * 0.33),
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             decoration: const BoxDecoration(
@@ -213,26 +217,66 @@ class _CityDetailsState extends State<CityDetails> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // City name text
-                Container(
-                  margin: EdgeInsets.only(
-                    top: screenHeight * 0.03,
-                    left: screenWidth * 0.03,
-                  ),
-                  child: Text(
-                    (widget.city),
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w400,
+                Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(
+                        top: screenHeight * 0.03,
+                        left: screenWidth * 0.03,
+                      ),
+                      child: Expanded(
+                        child: Text(
+                          (widget.city),
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                    SizedBox(
+                      width: screenWidth * 0.07,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => MapPage(lng: widget.lat, lat: widget.lng,)));
+                      },
+                      child: Row(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(top: screenHeight * 0.025),
+                            width: screenWidth * 0.06,
+                            height: screenHeight * 0.04,
+                            child:  Icon(
+                              Icons.location_on_sharp,
+                              size: screenWidth * 0.06,
+                              color: Colors.lightBlue,
+                            ),
+                          ),
+                          SizedBox(
+                            width: screenWidth * 0.01,
+                          ),
+                          Container(
+                              margin: EdgeInsets.only(top: screenHeight * 0.03),
+                              child:  Text(
+                                'Get Direction',
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.06,
+
+                                ),
+                              ))
+                        ],
+                      ),
+                    )
+                  ],
                 ),
-                 SizedBox(
+                SizedBox(
                   height: screenHeight * 0.01,
                 ),
                 // Country name text
                 Container(
-                  margin:  EdgeInsets.only(
+                  margin: EdgeInsets.only(
                     left: screenWidth * 0.061,
                   ),
                   child: Text(
@@ -245,20 +289,23 @@ class _CityDetailsState extends State<CityDetails> {
                 ),
                 // Description text
                 Container(
-                  height: screenHeight * 0.14,
+                  height: screenHeight * 0.4,
                   width: double.maxFinite,
-                  margin:  EdgeInsets.only(
+                  margin: EdgeInsets.only(
                     left: screenWidth * 0.04,
                   ),
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    (widget.description),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black38,
+                  child: SingleChildScrollView(
+                    child: Text(
+                      (widget.description),
+                      style:  TextStyle(
+                        fontSize: screenWidth * 0.05,
+                        color: Colors.black38,
+                      ),
+                      maxLines: 8,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.justify,
                     ),
-                    maxLines: 4,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -266,14 +313,19 @@ class _CityDetailsState extends State<CityDetails> {
           ),
           // Audio playback controls container
           Container(
-            margin: EdgeInsets.only(top: screenHeight * 0.62,),
+            margin: EdgeInsets.only(
+              top: screenHeight * 0.72,
+            ),
             width: screenWidth,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Voice clip label
-                 Padding(
-                  padding: EdgeInsets.only(left: screenWidth * 0.05,),
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: screenWidth * 0.05,
+                    top: screenHeight * 0.02,
+                  ),
                   child: const Text(
                     'Voice clip about the location',
                     style: TextStyle(
@@ -289,7 +341,8 @@ class _CityDetailsState extends State<CityDetails> {
                         margin: EdgeInsets.only(
                             left: screenWidth * 0.04,
                             right: screenWidth * 0.04),
-                        child: _progressBar()),
+                        child: _progressBar()
+                    ),
                     // Playback control buttons
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -304,7 +357,7 @@ class _CityDetailsState extends State<CityDetails> {
                           icon: const Icon(Icons.fast_forward_sharp),
                         ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ],

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
+import 'package:travely/components/global_variables.dart';
 
 import '../home/city_list_screen.dart';
 
@@ -18,8 +19,8 @@ class _OTPScreenState extends State<OTPScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        margin: const EdgeInsets.only(
-          top: 200,
+        margin: EdgeInsets.only(
+          top: screenHeight * 0.2,
         ),
         child: Column(
           children: [
@@ -34,8 +35,8 @@ class _OTPScreenState extends State<OTPScreen> {
                 ),
               ),
             ),
-            const SizedBox(
-              height: 10,
+            SizedBox(
+              height: screenHeight * 0.02,
             ),
             const Text(
               'Enter the verification code we have sent to your phone',
@@ -45,23 +46,24 @@ class _OTPScreenState extends State<OTPScreen> {
                 color: Colors.black45,
               ),
             ),
-            const SizedBox(
-              height: 10,
+            SizedBox(
+              height: screenHeight * 0.02,
             ),
             OtpTextField(
               numberOfFields: 6,
-              fillColor: Colors.black.withOpacity(0.1),
+              fillColor: Colors.black.withOpacity(0.05),
               filled: true,
               onSubmit: (code) {
                 print("OTP is: $code");
               },
             ),
-            const SizedBox(
-              height: 15,
+            SizedBox(
+              height: screenHeight * 0.02,
             ),
             ElevatedButton(
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Colors.black54),
               ),
               onPressed: () {
                 Navigator.of(context).push(

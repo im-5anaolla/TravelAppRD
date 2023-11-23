@@ -50,7 +50,8 @@ class _UserSignInState extends State<UserSignin> {
   }
 
   void _showSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   String? _validateEmail(value) {
@@ -70,15 +71,17 @@ class _UserSignInState extends State<UserSignin> {
     });
   }
 
-  Future<void> saveUserIdentifier(String identifier) async {
+  Future<void> saveUserCredentials(String email, String password) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('userIdentifier', identifier);
-    print('User identifier: $prefs');
+    prefs.setString('userEmail', email);
+    prefs.setString('userPassword', password);
+    print('User credentials saved: $prefs');
   }
 
-  Future<void> clearUserIdentifier() async {
+  Future<void> clearUserCredentials() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove('userIdentifier');
+    prefs.remove('userEmail');
+    prefs.remove('userPassword');
   }
 
   Future<void> login(String email, String password) async {
@@ -98,11 +101,12 @@ class _UserSignInState extends State<UserSignin> {
             responseBody['mesg'] == 'login success') {
           print('Login Successfully');
 
-          // Save user identifier if "Remember Me" is selected
+          // Save user credentials if "Remember Me" is selected
           if (_rememberMe) {
-            await saveUserIdentifier(email);
+            print('Remember me status is: $_rememberMe');
+            await saveUserCredentials(email, password);
           } else {
-            await clearUserIdentifier();
+            await clearUserCredentials();
           }
 
           // Set isLoggedIn to true in SharedPreferences
@@ -111,7 +115,8 @@ class _UserSignInState extends State<UserSignin> {
 
           navigateToCityListScreen();
         } else {
-          String errorMessage = responseBody['mesg'] ?? 'An unknown error occurred';
+          String errorMessage =
+              responseBody['mesg'] ?? 'An unknown error occurred';
           print('Login Failed: $errorMessage');
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -127,7 +132,8 @@ class _UserSignInState extends State<UserSignin> {
         print('Response Body: $responseBody');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Sign in failed. Check your credentials and try again.'),
+            content:
+                Text('Sign in failed. Check your credentials and try again.'),
           ),
         );
       }

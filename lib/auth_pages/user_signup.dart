@@ -2,10 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:travely/auth_pages/otp_screen.dart';
 import 'package:travely/auth_pages/phone_input_page.dart';
 import 'package:travely/auth_pages/user_signin.dart';
-import 'package:travely/home/city_list_screen.dart';
+import 'package:travely/components/global_variables.dart';
 
 class UserSignUp extends StatefulWidget {
   const UserSignUp({Key? key}) : super(key: key);
@@ -22,7 +21,6 @@ class _UserSignUpState extends State<UserSignUp> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _passwordVisible = false;
-
 
   void _passwordVisibility() {
     setState(() {
@@ -43,8 +41,8 @@ class _UserSignUpState extends State<UserSignUp> {
 
   void _showSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        behavior: SnackBarBehavior.floating,
-        content: Text(message),
+      behavior: SnackBarBehavior.floating,
+      content: Text(message),
     ));
   }
 
@@ -104,19 +102,21 @@ class _UserSignUpState extends State<UserSignUp> {
           Form(
             key: _formKey,
             child: ListView(
-              padding: const EdgeInsets.only(
-                top: 300,
-                left: 16.0,
-                right: 16.0,
+              padding: EdgeInsets.only(
+                top: screenHeight * 0.5,
+                left: screenWidth * 0.02,
+                right: screenWidth * 0.02,
               ),
               children: [
                 // Name TextField
                 Container(
-                  margin: const EdgeInsets.only(
-                    left: 8,
-                    right: 8,
+                  margin: EdgeInsets.only(
+                    left: screenWidth * 0.02,
+                    right: screenWidth * 0.02,
                   ),
-                  padding: const EdgeInsets.only(left: 20, right: 5),
+                  padding: EdgeInsets.only(
+                    left: screenWidth * 0.04,
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     color: Colors.white70,
@@ -137,23 +137,28 @@ class _UserSignUpState extends State<UserSignUp> {
                 ),
                 // Email/Phone TextField
                 Container(
-                  margin: const EdgeInsets.only(left: 8, right: 8, top: 10),
-                  padding: const EdgeInsets.only(left: 20, right: 5),
+                  margin: EdgeInsets.only(
+                      left: screenWidth * 0.02,
+                      right: screenWidth * 0.02,
+                      top: screenHeight * 0.01),
+                  padding: EdgeInsets.only(left: screenWidth * 0.04),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     color: Colors.white70,
                   ),
                   child: TextFormField(
-                    controller: emailTextController,
-                    decoration: const InputDecoration(
-                        hintText: 'Enter Email', border: InputBorder.none),
-                    validator: _validateEmail
-                  ),
+                      controller: emailTextController,
+                      decoration: const InputDecoration(
+                          hintText: 'Enter Email', border: InputBorder.none),
+                      validator: _validateEmail),
                 ),
 
                 Container(
-                  margin: const EdgeInsets.only(left: 8, right: 8, top: 10),
-                  padding: const EdgeInsets.only(left: 20, right: 5),
+                  margin: EdgeInsets.only(
+                      left: screenWidth * 0.02,
+                      right: screenWidth * 0.02,
+                      top: screenHeight * 0.01),
+                  padding: EdgeInsets.only(left: screenWidth * 0.04),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     color: Colors.white70,
@@ -176,8 +181,11 @@ class _UserSignUpState extends State<UserSignUp> {
 
                 // Password TextField
                 Container(
-                  margin: const EdgeInsets.only(left: 8, right: 8, top: 10),
-                  padding: const EdgeInsets.only(left: 20, right: 5),
+                  margin: EdgeInsets.only(
+                      left: screenWidth * 0.02,
+                      right: screenWidth * 0.02,
+                      top: screenHeight * 0.01),
+                  padding: EdgeInsets.only(left: screenWidth * 0.04),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     color: Colors.white70,
@@ -214,10 +222,11 @@ class _UserSignUpState extends State<UserSignUp> {
 
                 ///This code sign-up users with the API server.
                 Container(
-                  margin:
-                  const EdgeInsets.only(top: 40, left: 8, right: 8, bottom: 10),
-                  height: 40,
-                  width: 100,
+                  margin: EdgeInsets.only(
+                      left: screenWidth * 0.02,
+                      right: screenWidth * 0.02,
+                      top: screenHeight * 0.05),
+                  height: screenHeight * 0.05,
                   decoration: BoxDecoration(
                       color: Colors.blue,
                       borderRadius: BorderRadius.circular(10)),

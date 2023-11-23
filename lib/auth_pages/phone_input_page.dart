@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:travely/components/global_variables.dart';
 
 import 'otp_screen.dart';
 
@@ -9,7 +10,6 @@ class PhoneInputPage extends StatefulWidget {
 }
 
 class _PhoneInputPageState extends State<PhoneInputPage> {
-
   bool loading = false;
   final phoneNumberController = TextEditingController();
   final auth = FirebaseAuth.instance;
@@ -18,7 +18,7 @@ class _PhoneInputPageState extends State<PhoneInputPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Verify Phone Number'),
+        title: const Text('Verify Phone Number'),
       ),
       body: Center(
         child: Padding(
@@ -32,20 +32,20 @@ class _PhoneInputPageState extends State<PhoneInputPage> {
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'SourceSans3',
-
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.02),
               Container(
                 //margin: EdgeInsets.all(10),
-                padding: EdgeInsets.only(left: 20,),
+                padding: EdgeInsets.only(
+                  left: screenWidth * 0.04,
+                ),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     color: Colors.white24,
-                    border: Border.all(color: Colors.lightBlueAccent)
-                ),
-                child:  TextField(
+                    border: Border.all(color: Colors.lightBlueAccent)),
+                child: TextField(
                   controller: phoneNumberController,
                   keyboardType: TextInputType.phone,
                   decoration: const InputDecoration(
@@ -55,31 +55,42 @@ class _PhoneInputPageState extends State<PhoneInputPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.03),
               ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.black54)),
                 onPressed: () {
                   const SnackBar(content: CircularProgressIndicator());
                   auth.verifyPhoneNumber(
-                    phoneNumber: phoneNumberController.text,
-                      verificationCompleted: (_){
-                      //Set loader to false if implemented.
+                      phoneNumber: phoneNumberController.text,
+                      verificationCompleted: (_) {
+                        //Set loader to false if implemented.
                       },
-
-                      verificationFailed: (e){
-                      //set loader
-                      print('Error: ${e.toString()}'
-                      );
-                      //set loader to false...
+                      verificationFailed: (e) {
+                        //set loader
+                        print('Error: ${e.toString()}');
+                        //set loader to false...
                       },
-                      codeSent: (String verificationId, int? token){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => OTPScreen(verificationId: verificationId,)));
+                      codeSent: (String verificationId, int? token) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => OTPScreen(
+                                      verificationId: verificationId,
+                                    )));
                       },
-                      codeAutoRetrievalTimeout: (e){
-                      print('Time Out: ${e.toString()}');
-                      //set loader to false
+                      codeAutoRetrievalTimeout: (e) {
+                        print('Time Out: ${e.toString()}');
+                        //set loader to false
                       });
                 },
-                child: Text('Send OTP'),
+                child: Text(
+                  'Send OTP',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
               ),
             ],
           ),

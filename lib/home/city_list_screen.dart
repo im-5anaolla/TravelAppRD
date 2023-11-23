@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:travely/components/global_variables.dart';
 import 'package:travely/home/city_sectors.dart';
 import '../app_models/city_list_model.dart';
 
@@ -15,25 +16,10 @@ class _CityListScreenState extends State<CityListScreen> {
   String search = '';
 
   Color getColorForFilteredAlphabets(alphabets) {
-    for (int i = 0; i < searchController.text.length; i++) {
-      if (searchController.text[i].isNotEmpty) {
-        return Colors.blue;
-      }
+    if (searchController.text.isNotEmpty) {
+      return Colors.indigo;
     }
     return Colors.black;
-  }
-
-  List<TextSpan> getAlphabetsColor(String text) {
-    List<TextSpan> filteredAlphabets = [];
-
-    for (int i = 0; i < searchController.text.length; i++) {
-      filteredAlphabets.add(TextSpan(
-          text: searchController.text[i],
-          style: TextStyle(
-            color: getColorForFilteredAlphabets(searchController.text[i]),
-          )));
-    }
-    return filteredAlphabets; //This list (filteredAlphabets) return search alphabets.
   }
 
   Future<CityListModel?> fetchCityList() async {
@@ -52,8 +38,11 @@ class _CityListScreenState extends State<CityListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        title: const Text('City List', style: TextStyle(color: Colors.white),),
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text(
+          'City List',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.black,
       ),
       body: Column(
@@ -61,9 +50,12 @@ class _CityListScreenState extends State<CityListScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
-              margin: const EdgeInsets.only(
-                  left: 10, right: 10, top: 10, bottom: 10),
-              height: 50,
+              margin: EdgeInsets.only(
+                  left: screenWidth * 0.02,
+                  right: screenWidth * 0.02,
+                  top: screenHeight * 0.02,
+                  bottom: screenHeight * 0.02),
+              height: screenHeight * 0.055,
               width: double.maxFinite,
               decoration: BoxDecoration(
                 color: Colors.grey.shade200,
@@ -108,75 +100,73 @@ class _CityListScreenState extends State<CityListScreen> {
                           itemBuilder: (context, index) {
                             final city = cityList.data![index];
                             //Store city and country name to compare with the text in searchController.
-                            late String position = city.city!;
+                            late String cityPosition = city.city!;
+                            late String countryPosition = city.country!;
                             if (searchController.text.isEmpty) {
                               return ListTile(
                                 title: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Container(
-                                      margin: const EdgeInsets.only(
-                                        bottom: 10,
-                                      ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    CitySectors(
+                                                      cityId: city.id!,
+                                                      name: city.city!,
+                                                      description:
+                                                          city.description!,
+                                                      lat: city.lat!,
+                                                      lng: city.lng!,
+                                                    )));
+                                      },
                                       child: Row(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
                                           Container(
-                                            height: 120,
-                                            width: 120,
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            CitySectors(
-                                                              cityId: city.id!,
-                                                              name: city.city!,
-                                                              description: city
-                                                                  .description!,
-                                                            )));
-                                              },
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    const BorderRadius.all(
-                                                        Radius.circular(10)),
-                                                child: Image.network(
-                                                  imgUrl + city.images![0],
-                                                  fit: BoxFit.cover,
-                                                  errorBuilder: (context, error,
-                                                      stackTrac) {
-                                                    //Returns text widget if picture not found.
-                                                    return Container(
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.white12,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
-                                                        border: Border.all(
-                                                            color:
-                                                                Colors.black12),
-                                                      ),
-                                                      child: const Center(
-                                                        child: Text(
-                                                          'Image not found',
-                                                          style: TextStyle(
-                                                            fontSize: 12,
-                                                          ),
+                                            height: screenHeight * 0.16,
+                                            width: screenWidth * 0.33,
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  const BorderRadius.all(
+                                                      Radius.circular(10)),
+                                              child: Image.network(
+                                                imgUrl + city.images![0],
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (context, error,
+                                                    stackTrac) {
+                                                  //Returns text widget if picture not found.
+                                                  return Container(
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white12,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                      border: Border.all(
+                                                          color:
+                                                              Colors.black12),
+                                                    ),
+                                                    child: const Center(
+                                                      child: Text(
+                                                        'Image not found',
+                                                        style: TextStyle(
+                                                          fontSize: 12,
                                                         ),
                                                       ),
-                                                    );
-                                                  },
-                                                ),
+                                                    ),
+                                                  );
+                                                },
                                               ),
                                             ),
                                           ),
-                                          const SizedBox(
-                                            width: 0.6,
+                                          SizedBox(
+                                            width: screenWidth * 0.001,
                                           ),
                                           Padding(
-                                            padding:
-                                                const EdgeInsets.only(left: 8),
+                                            padding: EdgeInsets.only(
+                                                left: screenWidth * 0.03),
                                             child: Container(
                                               decoration: BoxDecoration(
                                                   color: Colors.grey.shade50,
@@ -208,7 +198,8 @@ class _CityListScreenState extends State<CityListScreen> {
                                                   ),
                                                   Container(
                                                     padding: EdgeInsets.only(
-                                                        top: 0, left: 3.0),
+                                                        left: screenWidth *
+                                                            0.013),
                                                     child: Text(
                                                       ///Path to the country name.
                                                       city.country! ??
@@ -223,14 +214,14 @@ class _CityListScreenState extends State<CityListScreen> {
                                                     ),
                                                   ),
                                                   Container(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 4.0,
-                                                            right: 8.0),
-                                                    height: 80,
-                                                    width: 190,
+                                                    padding: EdgeInsets.only(
+                                                        left:
+                                                            screenWidth * 0.02,
+                                                        right:
+                                                            screenWidth * 0.02),
+                                                    height: screenHeight * 0.1,
+                                                    width: screenWidth * 0.52,
                                                     decoration: BoxDecoration(
-                                                      color: Colors.white12,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               10),
@@ -259,23 +250,25 @@ class _CityListScreenState extends State<CityListScreen> {
                                   ],
                                 ),
                               );
-                            } else if (position.toLowerCase().contains(
-                                searchController.text.toLowerCase())) {
+                            } else if (cityPosition.toLowerCase().contains(
+                                    searchController.text.toLowerCase()) ||
+                                countryPosition.toLowerCase().contains(
+                                    searchController.text.toLowerCase())) {
                               return ListTile(
                                 title: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Container(
-                                      margin: const EdgeInsets.only(
-                                        bottom: 10,
+                                      margin: EdgeInsets.only(
+                                        bottom: screenHeight * 0.02,
                                       ),
                                       child: Row(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
                                           Container(
-                                            height: 120,
-                                            width: 120,
+                                            height: screenHeight * 0.16,
+                                            width: screenWidth * 0.33,
                                             child: GestureDetector(
                                               onTap: () {
                                                 Navigator.of(context).push(
@@ -286,6 +279,8 @@ class _CityListScreenState extends State<CityListScreen> {
                                                               name: city.city!,
                                                               description: city
                                                                   .description!,
+                                                              lng: city.lng!,
+                                                              lat: city.lat!,
                                                             )));
                                               },
                                               child: ClipRRect(
@@ -322,12 +317,12 @@ class _CityListScreenState extends State<CityListScreen> {
                                               ),
                                             ),
                                           ),
-                                          const SizedBox(
-                                            width: 0.6,
+                                          SizedBox(
+                                            width: screenWidth * 0.001,
                                           ),
                                           Padding(
-                                            padding:
-                                                const EdgeInsets.only(left: 8),
+                                            padding: EdgeInsets.only(
+                                                left: screenWidth * 0.015),
                                             child: Container(
                                               decoration: BoxDecoration(
                                                   color: Colors.grey.shade50,
@@ -344,7 +339,8 @@ class _CityListScreenState extends State<CityListScreen> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Container(
-                                                    padding: EdgeInsets.all(3),
+                                                    padding:
+                                                        const EdgeInsets.all(3),
                                                     child: RichText(
                                                       text: TextSpan(
                                                           //text: city.city ?? 'Country',
@@ -353,7 +349,7 @@ class _CityListScreenState extends State<CityListScreen> {
                                                               .style,
                                                           children: <TextSpan>[
                                                             TextSpan(
-                                                                text: position
+                                                                text: cityPosition
                                                                     .toString(),
                                                                 style:
                                                                     TextStyle(
@@ -366,11 +362,12 @@ class _CityListScreenState extends State<CityListScreen> {
                                                   ),
                                                   Container(
                                                     padding: EdgeInsets.only(
-                                                        top: 0, left: 3.0),
+                                                        left: screenWidth *
+                                                            0.001),
                                                     child: Text(
-                                                      ///Path to the country name.
-                                                      city.country! ??
-                                                          'Country',
+                                                      ///Path to the searched country name.
+                                                      countryPosition
+                                                          .toString(),
                                                       style: const TextStyle(
                                                         fontFamily:
                                                             'SourceSans3',
@@ -385,8 +382,8 @@ class _CityListScreenState extends State<CityListScreen> {
                                                         const EdgeInsets.only(
                                                             left: 4.0,
                                                             right: 8.0),
-                                                    height: 80,
-                                                    width: 190,
+                                                    height: screenHeight * 0.10,
+                                                    width: screenWidth * 0.52,
                                                     decoration: BoxDecoration(
                                                       color: Colors.white12,
                                                       borderRadius:

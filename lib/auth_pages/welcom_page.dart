@@ -30,7 +30,8 @@ class WelcomePage extends StatelessWidget {
                   child: InkWell(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => CityListScreen()));
+                          builder: (context) => CityListScreen(),
+                          ));
                     },
                     child: const Text(
                       'Skip',
