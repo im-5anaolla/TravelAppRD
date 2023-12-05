@@ -60,7 +60,11 @@ class _PhoneInputPageState extends State<PhoneInputPage> {
                 style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(Colors.black54)),
                 onPressed: () {
-                  const SnackBar(content: CircularProgressIndicator());
+                  const SnackBar(
+                      content: CircularProgressIndicator(
+                    color: Colors.black26,
+                    strokeWidth: 3.0,
+                  ));
                   auth.verifyPhoneNumber(
                       phoneNumber: phoneNumberController.text,
                       verificationCompleted: (_) {

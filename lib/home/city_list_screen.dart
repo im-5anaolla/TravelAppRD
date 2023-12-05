@@ -11,7 +11,8 @@ class CityListScreen extends StatefulWidget {
 }
 
 class _CityListScreenState extends State<CityListScreen> {
-  final imgUrl = 'https://travelapp.redstonz.com/assets/uploads/city-images/';
+  final imgUrl =
+      'https://travelapp.redstonz.com/project/public/assets/uploads/city-images/';
   TextEditingController searchController = TextEditingController();
   String search = '';
 
@@ -86,7 +87,11 @@ class _CityListScreenState extends State<CityListScreen> {
                     future: fetchCityList(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
+                        return const Center(
+                            child: CircularProgressIndicator(
+                          color: Colors.black26,
+                          strokeWidth: 3.0,
+                        ));
                       } else if (snapshot.hasError) {
                         print('Error: ${snapshot.error}');
                         return Text('Error: ${snapshot.error}');
@@ -99,7 +104,6 @@ class _CityListScreenState extends State<CityListScreen> {
                           itemCount: cityList.data?.length ?? 0,
                           itemBuilder: (context, index) {
                             final city = cityList.data![index];
-                            //Store city and country name to compare with the text in searchController.
                             late String cityPosition = city.city!;
                             late String countryPosition = city.country!;
                             if (searchController.text.isEmpty) {
@@ -135,9 +139,35 @@ class _CityListScreenState extends State<CityListScreen> {
                                               child: Image.network(
                                                 imgUrl + city.images![0],
                                                 fit: BoxFit.cover,
+                                                loadingBuilder:
+                                                    (BuildContext context,
+                                                        Widget child,
+                                                        ImageChunkEvent?
+                                                            loadingProgress) {
+                                                  if (loadingProgress == null) {
+                                                    return child;
+                                                  } else {
+                                                    return Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        color: Colors.black26,
+                                                        strokeWidth: 3.0,
+                                                        value: loadingProgress
+                                                                    .expectedTotalBytes !=
+                                                                null
+                                                            ? loadingProgress
+                                                                    .cumulativeBytesLoaded /
+                                                                (loadingProgress
+                                                                        .expectedTotalBytes ??
+                                                                    1)
+                                                            : null,
+                                                      ),
+                                                    );
+                                                  }
+                                                },
                                                 errorBuilder: (context, error,
                                                     stackTrac) {
-                                                  //Returns text widget if picture not found.
+                                                  // Returns a widget if the picture is not found.
                                                   return Container(
                                                     decoration: BoxDecoration(
                                                       color: Colors.white12,
@@ -186,6 +216,7 @@ class _CityListScreenState extends State<CityListScreen> {
                                                     padding: EdgeInsets.all(3),
                                                     child: Text(
                                                       city.city ?? 'Country',
+                                                      //city.images![0],
                                                       //Path to the city name.
                                                       style: const TextStyle(
                                                         fontFamily:
@@ -202,8 +233,8 @@ class _CityListScreenState extends State<CityListScreen> {
                                                             0.013),
                                                     child: Text(
                                                       ///Path to the country name.
-                                                      city.country! ??
-                                                          'Country',
+                                                      city.country!,
+                                                      //city.images![0],
                                                       style: const TextStyle(
                                                         fontFamily:
                                                             'SourceSans3',
@@ -227,18 +258,17 @@ class _CityListScreenState extends State<CityListScreen> {
                                                               10),
                                                     ),
                                                     child: Text(
-                                                      city.description
-                                                          .toString(),
-                                                      //Path to the cityDescription
-                                                      maxLines: 4,
-                                                      style: const TextStyle(
-                                                        fontFamily:
-                                                            'SourceSans3',
-                                                        fontSize: 14,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                    ),
+                                                        city.description
+                                                            .toString(),
+                                                        //Path to the cityDescription
+                                                        maxLines: 4,
+                                                        style: const TextStyle(
+                                                          fontFamily:
+                                                              'SourceSans3',
+                                                          fontSize: 14,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        )),
                                                   )
                                                 ],
                                               ),
@@ -288,7 +318,13 @@ class _CityListScreenState extends State<CityListScreen> {
                                                     const BorderRadius.all(
                                                         Radius.circular(10)),
                                                 child: Image.network(
-                                                  imgUrl + city.images![0],
+                                                  (city.images != null &&
+                                                          city.images!
+                                                              .isNotEmpty)
+                                                      ? imgUrl +
+                                                          jsonDecode(
+                                                              city.images![0])
+                                                      : 'no data',
                                                   fit: BoxFit.cover,
                                                   errorBuilder: (context, error,
                                                       stackTrac) {

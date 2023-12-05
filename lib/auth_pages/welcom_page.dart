@@ -1,11 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:travely/auth_pages/user_signin.dart';
 import 'package:travely/auth_pages/user_signup.dart';
 import 'package:travely/components/global_variables.dart';
 import 'package:travely/home/city_list_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class WelcomePage extends StatelessWidget {
+class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
+
+  @override
+  _WelcomePageState createState() => _WelcomePageState();
+}
+
+class _WelcomePageState extends State<WelcomePage> {
+  @override
+  void initState() {
+    super.initState();
+    checkUserLoggedIn();
+  }
+
+  void checkUserLoggedIn() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+    if (isLoggedIn) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => CityListScreen()),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +48,14 @@ class WelcomePage extends StatelessWidget {
               children: [
                 Container(
                   margin: EdgeInsets.only(
-                      top: screenHeight * 0.05, left: screenWidth * 0.7),
+                    top: screenHeight * 0.05,
+                    left: screenWidth * 0.7,
+                  ),
                   child: InkWell(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => CityListScreen(),
-                          ));
+                        builder: (context) => CityListScreen(),
+                      ));
                     },
                     child: const Text(
                       'Skip',
@@ -46,8 +70,10 @@ class WelcomePage extends StatelessWidget {
                   width: screenWidth,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => UserSignin()));
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                            builder: (context) => CityListScreen()),
+                      );
                     },
                     child: const Text('Login'),
                   ),
@@ -68,7 +94,8 @@ class WelcomePage extends StatelessWidget {
                     GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => UserSignUp()));
+                          builder: (context) => UserSignUp(),
+                        ));
                       },
                       child: const Text(
                         'Sign-Up',

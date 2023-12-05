@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:travely/auth_pages/welcom_page.dart';
 import 'package:travely/components/global_variables.dart';
 import 'city_details.dart';
 
@@ -25,7 +26,8 @@ class CitySectors extends StatefulWidget {
 }
 
 class _CitySectorsState extends State<CitySectors> {
-  final sectorImgs = 'https://travelapp.redstonz.com/assets/uploads/place/';
+  final sectorImgs =
+      'https://travelapp.redstonz.com/project/public/assets/uploads/place/';
 
   List<Map<String, dynamic>> data = [];
   bool isLoading = true;
@@ -77,7 +79,10 @@ class _CitySectorsState extends State<CitySectors> {
       ),
       body: isLoading
           ? const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(
+                color: Colors.black26,
+                strokeWidth: 3.0,
+              ),
             )
           : data.isNotEmpty
               ? ListView.builder(
@@ -90,16 +95,18 @@ class _CitySectorsState extends State<CitySectors> {
                         children: [
                           GestureDetector(
                             onTap: () {
+                              print('Tapped');
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => CityDetails(
-                                        city: intPoint['name'],
-                                        country: intPoint['city_name'],
+                                        name: intPoint['name'],
                                         images: intPoint['images'],
-                                        description: intPoint['detail'],
-                                        id: intPoint['id'],
-                                        voiceNote: intPoint['voice_note'],
-                                        lat: intPoint['lat'],
+                                        city_name: intPoint['city_name'],
+                                        detail: intPoint['detail'],
+                                        //voice_note: intPoint['voice_note'],
                                         lng: intPoint['lng'],
+                                        lat: intPoint['lat'],
+                                        id: intPoint['id'],
+                                        city_id: intPoint['city_id'],
                                       )));
                             },
                             child: Container(
@@ -108,7 +115,7 @@ class _CitySectorsState extends State<CitySectors> {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
+                                  SizedBox(
                                     height: screenHeight * 0.16,
                                     width: screenWidth * 0.333,
                                     child: ClipRRect(
@@ -136,6 +143,31 @@ class _CitySectorsState extends State<CitySectors> {
                                               ),
                                             ),
                                           );
+                                        },
+                                        loadingBuilder: (BuildContext context,
+                                            Widget child,
+                                            ImageChunkEvent? loadingProgress) {
+                                          if (loadingProgress == null) {
+                                            // Image is fully loaded, display the image
+                                            return child;
+                                          } else {
+                                            // Image is still loading, display a custom circular progress indicator
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                color: Colors.black26,
+                                                strokeWidth: 3.0,
+                                                value: loadingProgress
+                                                            .expectedTotalBytes !=
+                                                        null
+                                                    ? loadingProgress
+                                                            .cumulativeBytesLoaded /
+                                                        (loadingProgress
+                                                                .expectedTotalBytes ??
+                                                            1)
+                                                    : null,
+                                              ),
+                                            );
+                                          }
                                         },
                                       ),
                                     ),

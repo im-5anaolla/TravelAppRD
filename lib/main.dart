@@ -1,8 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:travely/auth_pages/welcom_page.dart';
 import 'package:travely/home/city_list_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'auth_pages/welcom_page.dart';
 import 'components/global_variables.dart';
 
 void main() async {
@@ -12,7 +12,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     Future<bool> isUserLoggedIn() async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? userIdentifier = prefs.getString('userIdentifier');
-      print('User prefs: $userIdentifier');
+      print('Login status: $userIdentifier');
       return userIdentifier != null;
     }
 
@@ -32,33 +32,24 @@ class MyApp extends StatelessWidget {
       future: isUserLoggedIn(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.data == true) {
-            return MaterialApp(
-              debugShowCheckedModeBanner: false,
-              home: CityListScreen(),
-            );
-          } else {
-            return const MaterialApp(
-              debugShowCheckedModeBanner: false,
-              home: WelcomePage(),
-            );
-          }
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            home: snapshot.data == true ? CityListScreen() : WelcomePage(),
+          );
         } else {
           return const MaterialApp(
             debugShowCheckedModeBanner: false,
             home: Scaffold(
               body: Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(
+                  color: Colors.black26,
+                  strokeWidth: 3.0,
+                ),
               ),
             ),
           );
         }
       },
     );
-
-    // return MaterialApp(
-    //   debugShowCheckedModeBanner: false,
-    //     home: CityListScreen(),
-    // );
   }
 }

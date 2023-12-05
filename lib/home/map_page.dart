@@ -36,22 +36,22 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
-
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: GoogleMap(
-      initialCameraPosition: CameraPosition(
-        target: _currentLocation,
-        zoom: 15,
-      ),
-      markers: {
-        Marker(
-          markerId: MarkerId('currentLocation'),
-          icon: BitmapDescriptor.defaultMarker,
-          position: _currentLocation,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: GoogleMap(
+        initialCameraPosition: CameraPosition(
+          target: _currentLocation,
+          zoom: 15,
         ),
-      },
-    ),
-  );
-}}
+        markers: {
+          Marker(
+            markerId: MarkerId('currentLocation'),
+            icon: BitmapDescriptor.defaultMarker,
+            position: _currentLocation,
+          ),
+        },
+      ),
+    );
+  }
+}

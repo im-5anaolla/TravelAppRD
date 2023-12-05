@@ -1,11 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:travely/auth_pages/user_signup.dart';
 import 'package:travely/components/global_variables.dart';
-import '../home/city_list_screen.dart';
 import 'forgot_password.dart';
 
 class UserSignin extends StatefulWidget {
@@ -21,27 +19,6 @@ class _UserSignInState extends State<UserSignin> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _passwordVisible = false;
   bool _rememberMe = false;
-
-  @override
-  void initState() {
-    super.initState();
-    checkLoginStatus();
-  }
-
-  void checkLoginStatus() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-
-    if (isLoggedIn) {
-      navigateToCityListScreen();
-    }
-  }
-
-  void navigateToCityListScreen() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => CityListScreen()),
-    );
-  }
 
   void _validatePassword(String password) {
     if (password.length < 8) {
@@ -100,20 +77,16 @@ class _UserSignInState extends State<UserSignin> {
         if (responseBody.containsKey('mesg') &&
             responseBody['mesg'] == 'login success') {
           print('Login Successfully');
-
           // Save user credentials if "Remember Me" is selected
           if (_rememberMe) {
             print('Remember me status is: $_rememberMe');
             await saveUserCredentials(email, password);
-          } else {
+          } else if (!_rememberMe) {
+            print('User is Logged in without storing credentials');
             await clearUserCredentials();
           }
 
-          // Set isLoggedIn to true in SharedPreferences
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setBool('isLoggedIn', true);
-
-          navigateToCityListScreen();
+          // No need for navigation, as it is handled in WelcomePage
         } else {
           String errorMessage =
               responseBody['mesg'] ?? 'An unknown error occurred';

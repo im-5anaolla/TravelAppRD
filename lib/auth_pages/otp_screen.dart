@@ -102,11 +102,9 @@ Future<void> verifyPhone(String phoneNumber) async {
   }
 
   codeSent(String verificationId, int? resendToken) {
-    // Save the verification ID and show the OTP entry UI
     String smsCode = ''; // Get OTP input from the user
     PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: verificationId, smsCode: smsCode);
-    // Use the credential to sign in
   }
 
   codeAutoRetrievalTimeout(String verificationId) {

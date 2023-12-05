@@ -54,7 +54,8 @@ class ForgotPasswordPage extends StatelessWidget {
               SizedBox(height: screenHeight * 0.01),
               TextButton(
                 onPressed: () {
-                  Navigator.push((context), MaterialPageRoute(builder: (context) => UserSignin()));
+                  Navigator.push((context),
+                      MaterialPageRoute(builder: (context) => UserSignin()));
                 },
                 child: Text('Back to Sign In'),
               ),

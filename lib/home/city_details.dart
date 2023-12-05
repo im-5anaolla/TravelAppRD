@@ -7,26 +7,27 @@ import 'package:travely/home/map_page.dart';
 
 // Define the CityDetails widget
 class CityDetails extends StatefulWidget {
-  final country;
-  final city;
+  final id;
+  final city_id;
+  final name;
+  final city_name;
   final images;
-  final description;
+  final voice_note;
+  final detail;
   final lat;
   final lng;
-  final id;
-  final voiceNote;
 
-  // Constructor for CityDetails widget
   const CityDetails({
     Key? key,
-    required this.country,
-    required this.city,
-    required this.images,
-    required this.description,
+    this.id,
+    this.city_id,
+    this.name,
+    this.city_name,
+    this.images,
+    this.voice_note,
+    this.detail,
     this.lat,
     this.lng,
-    this.id,
-    required this.voiceNote,
   }) : super(key: key);
 
   // Create the state for the CityDetails widget
@@ -35,7 +36,8 @@ class CityDetails extends StatefulWidget {
 }
 
 // Define constant URLs for image and audio clips
-const secImgUrl = 'https://travelapp.redstonz.com/assets/uploads/place/';
+const secImgUrl =
+    'https://travelapp.redstonz.com/project/public/assets/uploads/place/';
 const audioClipsUrl =
     'https://travelapp.redstonz.com/assets/uploads/voice-note/';
 
@@ -128,35 +130,48 @@ class _CityDetailsState extends State<CityDetails> {
   }
 
   // Method to set up audio player and load audio stream
-  Future<void> _setupAudioPlayer() async {
-    _player.playbackEventStream.listen(
-      (event) {},
-      onError: (Object e, StackTrace stackTrace) {
-        print('A stream error occurred: $e');
-      },
-    );
-    try {
-      _player.setAudioSource(
-        AudioSource.uri(
-          Uri.parse(audioClipsUrl + widget.voiceNote),
-        ),
-      );
-    } catch (e) {
-      print('Error loading audio stream: $e');
-    }
-  }
+  // Future<void> _setupAudioPlayer() async {
+  //   _player.playbackEventStream.listen(
+  //     (event) {
+  //       _player.setAudioSource(
+  //           AudioSource.uri(Uri.parse(audioClipsUrl + widget.voice_note)));
+  //     },
+  //     onError: (Object e, StackTrace stackTrace) {
+  //       print('A stream error occurred: $e');
+  //     },
+  //   );
+  //   try {
+  //     _player.setAudioSource(
+  //       AudioSource.uri(
+  //         Uri.parse(audioClipsUrl + widget.voice_note),
+  //       ),
+  //     );
+  //   } catch (e) {
+  //     print('Error loading audio stream: $e');
+  //   }
+  // }
 
   // Initialize audio player setup when the widget is created
   @override
   void initState() {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
-    _setupAudioPlayer();
+    //_setupAudioPlayer();
   }
 
   // Build the UI for the CityDetails widget
   @override
   Widget build(BuildContext context) {
+    print("city id: " + widget.id.toString());
+    print("city id: " + widget.city_id.toString());
+    print("country name: " + widget.name);
+    print("city name: " + widget.city_name);
+    print("images: " + widget.images[0].toString());
+    print("voice note: " + widget.voice_note.toString());
+    print("details: " + widget.detail);
+    print("city lat: " + widget.lat);
+    print("city lng: " + widget.lng);
+
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -184,16 +199,20 @@ class _CityDetailsState extends State<CityDetails> {
               errorBuilder: (context, error, stackTrac) {
                 return Container(
                   decoration: BoxDecoration(
-                    color: Colors.white12,
-                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.black26,
                     border: Border.all(color: Colors.black12),
                   ),
                   child: Center(
                     child: Container(
                       width: screenWidth,
-                      child: Image.asset(
-                        'assets/images/imgNotFound.jpg',
-                        fit: BoxFit.cover,
+                      child: const Center(
+                        child: Text(
+                          'Image not found',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 18,
+                              color: Colors.black54),
+                        ),
                       ),
                     ),
                   ),
@@ -220,53 +239,58 @@ class _CityDetailsState extends State<CityDetails> {
                 Row(
                   children: [
                     Container(
+                      width: screenWidth * 0.5,
                       margin: EdgeInsets.only(
                         top: screenHeight * 0.03,
                         left: screenWidth * 0.03,
                       ),
-                      child: Expanded(
-                        child: Text(
-                          (widget.city),
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w400,
-                          ),
+                      child: Text(
+                        (widget.city_name),
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ),
                     SizedBox(
-                      width: screenWidth * 0.07,
+                      width: screenWidth * 0.01,
                     ),
                     GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => MapPage(lng: widget.lat, lat: widget.lng,)));
+                            builder: (context) => MapPage(
+                                  lng: widget.lat,
+                                  lat: widget.lng,
+                                )));
                       },
-                      child: Row(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(top: screenHeight * 0.025),
-                            width: screenWidth * 0.06,
-                            height: screenHeight * 0.04,
-                            child:  Icon(
-                              Icons.location_on_sharp,
-                              size: screenWidth * 0.06,
-                              color: Colors.lightBlue,
+                      child: SizedBox(
+                        width: screenWidth * 0.45,
+                        child: Row(
+                          children: [
+                            Container(
+                              margin:
+                                  EdgeInsets.only(top: screenHeight * 0.025),
+                              width: screenWidth * 0.06,
+                              child: Icon(
+                                Icons.location_on_sharp,
+                                size: screenWidth * 0.06,
+                                color: Colors.lightBlue,
+                              ),
                             ),
-                          ),
-                          SizedBox(
-                            width: screenWidth * 0.01,
-                          ),
-                          Container(
-                              margin: EdgeInsets.only(top: screenHeight * 0.03),
-                              child:  Text(
-                                'Get Direction',
-                                style: TextStyle(
-                                  fontSize: screenWidth * 0.06,
-
-                                ),
-                              ))
-                        ],
+                            SizedBox(
+                              width: screenWidth * 0.01,
+                            ),
+                            Container(
+                                margin:
+                                    EdgeInsets.only(top: screenHeight * 0.025),
+                                child: Text(
+                                  'Get Direction',
+                                  style: TextStyle(
+                                    fontSize: screenWidth * 0.06,
+                                  ),
+                                ))
+                          ],
+                        ),
                       ),
                     )
                   ],
@@ -280,7 +304,8 @@ class _CityDetailsState extends State<CityDetails> {
                     left: screenWidth * 0.061,
                   ),
                   child: Text(
-                    (widget.country),
+                    //name of the country
+                    (widget.name),
                     style: const TextStyle(
                       fontSize: 18,
                       color: Colors.black54,
@@ -297,8 +322,8 @@ class _CityDetailsState extends State<CityDetails> {
                   padding: const EdgeInsets.all(8.0),
                   child: SingleChildScrollView(
                     child: Text(
-                      (widget.description),
-                      style:  TextStyle(
+                      (widget.detail),
+                      style: TextStyle(
                         fontSize: screenWidth * 0.05,
                         color: Colors.black38,
                       ),
@@ -341,8 +366,7 @@ class _CityDetailsState extends State<CityDetails> {
                         margin: EdgeInsets.only(
                             left: screenWidth * 0.04,
                             right: screenWidth * 0.04),
-                        child: _progressBar()
-                    ),
+                        child: _progressBar()),
                     // Playback control buttons
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

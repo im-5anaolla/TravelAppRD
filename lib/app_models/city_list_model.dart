@@ -9,14 +9,14 @@ class CityListModel {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(Data.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data =  Map<String, dynamic>();
-    data['response'] = this.response;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['response'] = response;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -74,14 +74,14 @@ class Data {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['country'] = this.country;
-    data['city'] = this.city;
-    data['lat'] = this.lat;
-    data['lng'] = this.lng;
-    data['description'] = this.description;
-    data['images'] = this.images;
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = id;
+    data['country'] = country;
+    data['city'] = city;
+    data['lat'] = lat;
+    data['lng'] = lng;
+    data['description'] = description;
+    data['images'] = images;
     return data;
   }
 }
