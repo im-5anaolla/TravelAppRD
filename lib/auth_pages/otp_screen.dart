@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:travely/components/global_variables.dart';
 
-import '../home/city_list_screen.dart';
+import '../home/list_of_cities.dart';
 
 class OTPScreen extends StatefulWidget {
   final String verificationId;
@@ -67,7 +67,7 @@ class _OTPScreenState extends State<OTPScreen> {
               ),
               onPressed: () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => CityListScreen()));
+                    MaterialPageRoute(builder: (context) => ListOfCities()));
               },
               child: const Text(
                 'Next',

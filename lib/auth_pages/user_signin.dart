@@ -4,6 +4,7 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:travely/auth_pages/user_signup.dart';
 import 'package:travely/components/global_variables.dart';
+import '../home/list_of_cities.dart';
 import 'forgot_password.dart';
 
 class UserSignin extends StatefulWidget {
@@ -33,7 +34,7 @@ class _UserSignInState extends State<UserSignin> {
 
   String? _validateEmail(value) {
     if (value.isEmpty) {
-      return 'Enter email';
+      return 'Please enter email';
     }
     RegExp regExp = RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
     if (!regExp.hasMatch(value)) {
@@ -50,15 +51,22 @@ class _UserSignInState extends State<UserSignin> {
 
   Future<void> saveUserCredentials(String email, String password) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isLoggedIn', true); // Updated key to 'isLoggedIn'
     prefs.setString('userEmail', email);
     prefs.setString('userPassword', password);
     print('User credentials saved: $prefs');
+    print('Login status after saving: ${prefs.getBool('isLoggedIn')}');
   }
 
   Future<void> clearUserCredentials() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('userEmail');
     prefs.remove('userPassword');
+  }
+
+  Future<bool> isUserLoggedIn() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('isLoggedIn') ?? false; // Return the value of isLoggedIn
   }
 
   Future<void> login(String email, String password) async {
@@ -77,7 +85,7 @@ class _UserSignInState extends State<UserSignin> {
         if (responseBody.containsKey('mesg') &&
             responseBody['mesg'] == 'login success') {
           print('Login Successfully');
-          // Save user credentials if "Remember Me" is selected
+
           if (_rememberMe) {
             print('Remember me status is: $_rememberMe');
             await saveUserCredentials(email, password);
@@ -86,7 +94,8 @@ class _UserSignInState extends State<UserSignin> {
             await clearUserCredentials();
           }
 
-          // No need for navigation, as it is handled in WelcomePage
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => ListOfCities()));
         } else {
           String errorMessage =
               responseBody['mesg'] ?? 'An unknown error occurred';
@@ -96,7 +105,7 @@ class _UserSignInState extends State<UserSignin> {
               margin: EdgeInsets.only(bottom: screenHeight * 0.9),
               behavior: SnackBarBehavior.floating,
               backgroundColor: Colors.red.shade600,
-              content: Text('Failed to sign in. $errorMessage'),
+              content: Text('Type correct credentials and try again'),
             ),
           );
         }
@@ -106,7 +115,7 @@ class _UserSignInState extends State<UserSignin> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content:
-                Text('Sign in failed. Check your credentials and try again.'),
+            Text('Sign in failed. Check your credentials and try again.'),
           ),
         );
       }

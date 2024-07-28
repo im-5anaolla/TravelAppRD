@@ -103,7 +103,7 @@ class _UserSignUpState extends State<UserSignUp> {
             key: _formKey,
             child: ListView(
               padding: EdgeInsets.only(
-                top: screenHeight * 0.5,
+                top: screenHeight * 0.45,
                 left: screenWidth * 0.02,
                 right: screenWidth * 0.02,
               ),
@@ -212,7 +212,7 @@ class _UserSignUpState extends State<UserSignUp> {
                         )),
                     validator: (value) {
                       if (value!.isEmpty || value.length < 8) {
-                        _validatePassword(value);
+                        //_validatePassword(value);
                         return 'Please enter a valid password (at least 8 characters).';
                       }
                       return null;

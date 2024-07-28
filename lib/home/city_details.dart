@@ -50,6 +50,7 @@ class _CityDetailsState extends State<CityDetails> {
   void dispose() {
     _player.dispose();
     super.dispose();
+    // _setupAudioPlayer();
   }
 
   // Method to rewind audio playback by 10 seconds
@@ -134,18 +135,24 @@ class _CityDetailsState extends State<CityDetails> {
   //   _player.playbackEventStream.listen(
   //     (event) {
   //       _player.setAudioSource(
-  //           AudioSource.uri(Uri.parse(audioClipsUrl + widget.voice_note)));
+  //           AudioSource.uri(Uri.parse(audioClipsUrl + widget.voice_note)),
+  //       );
+  //       print('Audio Stream Clip: ${audioClipsUrl.toString() + widget.voice_note.toString()}');
   //     },
   //     onError: (Object e, StackTrace stackTrace) {
   //       print('A stream error occurred: $e');
   //     },
   //   );
   //   try {
-  //     _player.setAudioSource(
-  //       AudioSource.uri(
-  //         Uri.parse(audioClipsUrl + widget.voice_note),
-  //       ),
-  //     );
+  //     if(widget.voice_note != null){
+  //      await _player.setAudioSource(
+  //         AudioSource.uri(
+  //           Uri.parse(audioClipsUrl + widget.voice_note),
+  //         ),
+  //       );
+  //     }else{
+  //       print('Audio source is null');
+  //     }
   //   } catch (e) {
   //     print('Error loading audio stream: $e');
   //   }
@@ -162,16 +169,7 @@ class _CityDetailsState extends State<CityDetails> {
   // Build the UI for the CityDetails widget
   @override
   Widget build(BuildContext context) {
-    print("city id: " + widget.id.toString());
-    print("city id: " + widget.city_id.toString());
-    print("country name: " + widget.name);
-    print("city name: " + widget.city_name);
-    print("images: " + widget.images[0].toString());
-    print("voice note: " + widget.voice_note.toString());
-    print("details: " + widget.detail);
-    print("city lat: " + widget.lat);
-    print("city lng: " + widget.lng);
-
+    print("voice note: ${widget.voice_note}");
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(

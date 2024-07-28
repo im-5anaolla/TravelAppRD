@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:travely/auth_pages/user_signin.dart';
 import 'package:travely/auth_pages/user_signup.dart';
 import 'package:travely/components/global_variables.dart';
-import 'package:travely/home/city_list_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:travely/home/list_of_cities.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -15,24 +16,20 @@ class _WelcomePageState extends State<WelcomePage> {
   @override
   void initState() {
     super.initState();
-    checkUserLoggedIn();
   }
 
-  void checkUserLoggedIn() async {
+  Future<bool> isUserLoggedIn() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-
-    if (isLoggedIn) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => CityListScreen()),
-      );
-    }
+    print('Login status: $isLoggedIn');
+    return isLoggedIn;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
+        fit: StackFit.expand,
         children: [
           SizedBox(
             height: screenHeight,
@@ -54,7 +51,7 @@ class _WelcomePageState extends State<WelcomePage> {
                   child: InkWell(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => CityListScreen(),
+                        builder: (context) => ListOfCities(),
                       ));
                     },
                     child: const Text(
@@ -69,13 +66,13 @@ class _WelcomePageState extends State<WelcomePage> {
                   margin: EdgeInsets.only(top: screenHeight * 0.75),
                   width: screenWidth,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                            builder: (context) => CityListScreen()),
-                      );
+                    onPressed: () async {
+                      bool isLoggedIn = await isUserLoggedIn();
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) =>
+                              isLoggedIn ? ListOfCities() : UserSignin()));
                     },
-                    child: const Text('Login'),
+                    child: const Text('Get Started'),
                   ),
                 ),
                 Row(

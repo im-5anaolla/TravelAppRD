@@ -1,18 +1,21 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:travely/components/global_variables.dart';
-import 'package:travely/home/city_sectors.dart';
-import '../app_models/city_list_model.dart';
 
-class CityListScreen extends StatefulWidget {
+import 'package:flutter/material.dart';
+
+import '../app_models/city_list_model.dart';
+import '../components/global_variables.dart';
+import 'package:http/http.dart' as http;
+
+import 'city_sectors.dart';
+class ListOfCities extends StatefulWidget {
+  const ListOfCities({super.key});
+
   @override
-  _CityListScreenState createState() => _CityListScreenState();
+  State<ListOfCities> createState() => _ListOfCitiesState();
 }
 
-class _CityListScreenState extends State<CityListScreen> {
-  final imgUrl =
-      'https://travelapp.redstonz.com/project/public/assets/uploads/city-images/';
+class _ListOfCitiesState extends State<ListOfCities> {
+  final imgUrl = 'https://travelapp.redstonz.com/project/public/assets/uploads/city-images/';
   TextEditingController searchController = TextEditingController();
   String search = '';
 
@@ -39,12 +42,14 @@ class _CityListScreenState extends State<CityListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text(
-          'City List',
-          style: TextStyle(color: Colors.white),
-        ),
         backgroundColor: Colors.black,
+        iconTheme: IconThemeData(color: Colors.white),
+        title: Text(
+          'List of cities',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -89,9 +94,9 @@ class _CityListScreenState extends State<CityListScreen> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(
                             child: CircularProgressIndicator(
-                          color: Colors.black26,
-                          strokeWidth: 3.0,
-                        ));
+                              color: Colors.black26,
+                              strokeWidth: 3.0,
+                            ));
                       } else if (snapshot.hasError) {
                         print('Error: ${snapshot.error}');
                         return Text('Error: ${snapshot.error}');
@@ -120,46 +125,46 @@ class _CityListScreenState extends State<CityListScreen> {
                                                       cityId: city.id!,
                                                       name: city.city!,
                                                       description:
-                                                          city.description!,
+                                                      city.description!,
                                                       lat: city.lat!,
                                                       lng: city.lng!,
                                                     )));
                                       },
                                       child: Row(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                         children: [
                                           Container(
                                             height: screenHeight * 0.16,
                                             width: screenWidth * 0.33,
                                             child: ClipRRect(
                                               borderRadius:
-                                                  const BorderRadius.all(
-                                                      Radius.circular(10)),
+                                              const BorderRadius.all(
+                                                  Radius.circular(10)),
                                               child: Image.network(
                                                 imgUrl + city.images![0],
                                                 fit: BoxFit.cover,
                                                 loadingBuilder:
                                                     (BuildContext context,
-                                                        Widget child,
-                                                        ImageChunkEvent?
-                                                            loadingProgress) {
+                                                    Widget child,
+                                                    ImageChunkEvent?
+                                                    loadingProgress) {
                                                   if (loadingProgress == null) {
                                                     return child;
                                                   } else {
                                                     return Center(
                                                       child:
-                                                          CircularProgressIndicator(
+                                                      CircularProgressIndicator(
                                                         color: Colors.black26,
                                                         strokeWidth: 3.0,
                                                         value: loadingProgress
-                                                                    .expectedTotalBytes !=
-                                                                null
+                                                            .expectedTotalBytes !=
+                                                            null
                                                             ? loadingProgress
-                                                                    .cumulativeBytesLoaded /
-                                                                (loadingProgress
-                                                                        .expectedTotalBytes ??
-                                                                    1)
+                                                            .cumulativeBytesLoaded /
+                                                            (loadingProgress
+                                                                .expectedTotalBytes ??
+                                                                1)
                                                             : null,
                                                       ),
                                                     );
@@ -172,11 +177,11 @@ class _CityListScreenState extends State<CityListScreen> {
                                                     decoration: BoxDecoration(
                                                       color: Colors.white12,
                                                       borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
+                                                      BorderRadius.circular(
+                                                          10),
                                                       border: Border.all(
                                                           color:
-                                                              Colors.black12),
+                                                          Colors.black12),
                                                     ),
                                                     child: const Center(
                                                       child: Text(
@@ -201,16 +206,16 @@ class _CityListScreenState extends State<CityListScreen> {
                                               decoration: BoxDecoration(
                                                   color: Colors.grey.shade50,
                                                   borderRadius:
-                                                      const BorderRadius.only(
-                                                          topRight:
-                                                              Radius.circular(
-                                                                  10),
-                                                          bottomRight:
-                                                              Radius.circular(
-                                                                  10))),
+                                                  const BorderRadius.only(
+                                                      topRight:
+                                                      Radius.circular(
+                                                          10),
+                                                      bottomRight:
+                                                      Radius.circular(
+                                                          10))),
                                               child: Column(
                                                 crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                                CrossAxisAlignment.start,
                                                 children: [
                                                   Container(
                                                     padding: EdgeInsets.all(3),
@@ -220,10 +225,10 @@ class _CityListScreenState extends State<CityListScreen> {
                                                       //Path to the city name.
                                                       style: const TextStyle(
                                                         fontFamily:
-                                                            'SourceSans3',
+                                                        'SourceSans3',
                                                         fontSize: 16,
                                                         fontWeight:
-                                                            FontWeight.bold,
+                                                        FontWeight.bold,
                                                       ),
                                                     ),
                                                   ),
@@ -237,25 +242,25 @@ class _CityListScreenState extends State<CityListScreen> {
                                                       //city.images![0],
                                                       style: const TextStyle(
                                                         fontFamily:
-                                                            'SourceSans3',
+                                                        'SourceSans3',
                                                         fontSize: 12,
                                                         fontWeight:
-                                                            FontWeight.w600,
+                                                        FontWeight.w600,
                                                       ),
                                                     ),
                                                   ),
                                                   Container(
                                                     padding: EdgeInsets.only(
                                                         left:
-                                                            screenWidth * 0.02,
+                                                        screenWidth * 0.02,
                                                         right:
-                                                            screenWidth * 0.02),
+                                                        screenWidth * 0.02),
                                                     height: screenHeight * 0.1,
                                                     width: screenWidth * 0.52,
                                                     decoration: BoxDecoration(
                                                       borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
+                                                      BorderRadius.circular(
+                                                          10),
                                                     ),
                                                     child: Text(
                                                         city.description
@@ -264,7 +269,7 @@ class _CityListScreenState extends State<CityListScreen> {
                                                         maxLines: 4,
                                                         style: const TextStyle(
                                                           fontFamily:
-                                                              'SourceSans3',
+                                                          'SourceSans3',
                                                           fontSize: 14,
                                                           overflow: TextOverflow
                                                               .ellipsis,
@@ -281,7 +286,7 @@ class _CityListScreenState extends State<CityListScreen> {
                                 ),
                               );
                             } else if (cityPosition.toLowerCase().contains(
-                                    searchController.text.toLowerCase()) ||
+                                searchController.text.toLowerCase()) ||
                                 countryPosition.toLowerCase().contains(
                                     searchController.text.toLowerCase())) {
                               return ListTile(
@@ -294,7 +299,7 @@ class _CityListScreenState extends State<CityListScreen> {
                                       ),
                                       child: Row(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                         children: [
                                           Container(
                                             height: screenHeight * 0.16,
@@ -315,16 +320,19 @@ class _CityListScreenState extends State<CityListScreen> {
                                               },
                                               child: ClipRRect(
                                                 borderRadius:
-                                                    const BorderRadius.all(
-                                                        Radius.circular(10)),
+                                                const BorderRadius.all(
+                                                    Radius.circular(10)),
                                                 child: Image.network(
-                                                  (city.images != null &&
-                                                          city.images!
-                                                              .isNotEmpty)
-                                                      ? imgUrl +
-                                                          jsonDecode(
-                                                              city.images![0])
-                                                      : 'no data',
+
+                                                  // (city.images != null &&
+                                                  //     city.images!
+                                                  //         .isNotEmpty)
+                                                  //     ? imgUrl +
+                                                  //     jsonDecode(
+                                                  //         city.images![0].toString())
+                                                  //     : 'no data',
+
+                                                  city.images![0],
                                                   fit: BoxFit.cover,
                                                   errorBuilder: (context, error,
                                                       stackTrac) {
@@ -333,11 +341,11 @@ class _CityListScreenState extends State<CityListScreen> {
                                                       decoration: BoxDecoration(
                                                         color: Colors.white12,
                                                         borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
+                                                        BorderRadius
+                                                            .circular(10),
                                                         border: Border.all(
                                                             color:
-                                                                Colors.black12),
+                                                            Colors.black12),
                                                       ),
                                                       child: const Center(
                                                         child: Text(
@@ -363,32 +371,33 @@ class _CityListScreenState extends State<CityListScreen> {
                                               decoration: BoxDecoration(
                                                   color: Colors.grey.shade50,
                                                   borderRadius:
-                                                      const BorderRadius.only(
-                                                          topRight:
-                                                              Radius.circular(
-                                                                  10),
-                                                          bottomRight:
-                                                              Radius.circular(
-                                                                  10))),
+                                                  const BorderRadius.only(
+                                                      topRight:
+                                                      Radius.circular(
+                                                          10),
+                                                      bottomRight:
+                                                      Radius.circular(
+                                                          10))),
                                               child: Column(
                                                 crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                                CrossAxisAlignment.start,
                                                 children: [
                                                   Container(
                                                     padding:
-                                                        const EdgeInsets.all(3),
+                                                    const EdgeInsets.all(3),
                                                     child: RichText(
                                                       text: TextSpan(
-                                                          //text: city.city ?? 'Country',
+                                                        ///This show the result as cityName + CityName e.g: IndiaIndia
+                                                          // text: city.city ??
+                                                          //     'Country',
                                                           style: DefaultTextStyle
-                                                                  .of(context)
+                                                              .of(context)
                                                               .style,
                                                           children: <TextSpan>[
                                                             TextSpan(
-                                                                text: cityPosition
-                                                                    .toString(),
+                                                                text: cityPosition.toString(),
                                                                 style:
-                                                                    TextStyle(
+                                                                TextStyle(
                                                                   color: getColorForFilteredAlphabets(
                                                                       searchController
                                                                           .text),
@@ -402,29 +411,28 @@ class _CityListScreenState extends State<CityListScreen> {
                                                             0.001),
                                                     child: Text(
                                                       ///Path to the searched country name.
-                                                      countryPosition
-                                                          .toString(),
+                                                      countryPosition,
                                                       style: const TextStyle(
                                                         fontFamily:
-                                                            'SourceSans3',
+                                                        'SourceSans3',
                                                         fontSize: 12,
                                                         fontWeight:
-                                                            FontWeight.w600,
+                                                        FontWeight.w600,
                                                       ),
                                                     ),
                                                   ),
                                                   Container(
                                                     padding:
-                                                        const EdgeInsets.only(
-                                                            left: 4.0,
-                                                            right: 8.0),
+                                                    const EdgeInsets.only(
+                                                        left: 4.0,
+                                                        right: 8.0),
                                                     height: screenHeight * 0.10,
                                                     width: screenWidth * 0.52,
                                                     decoration: BoxDecoration(
                                                       color: Colors.white12,
                                                       borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
+                                                      BorderRadius.circular(
+                                                          10),
                                                     ),
                                                     child: Text(
                                                       city.description
@@ -433,13 +441,13 @@ class _CityListScreenState extends State<CityListScreen> {
                                                       maxLines: 4,
                                                       style: const TextStyle(
                                                         fontFamily:
-                                                            'SourceSans3',
+                                                        'SourceSans3',
                                                         fontSize: 14,
                                                         overflow: TextOverflow
                                                             .ellipsis,
                                                       ),
                                                     ),
-                                                  )
+                                                  ),
                                                 ],
                                               ),
                                             ),
@@ -464,6 +472,7 @@ class _CityListScreenState extends State<CityListScreen> {
           ),
         ],
       ),
+
     );
   }
 }
